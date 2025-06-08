@@ -1,13 +1,84 @@
-
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Toonix TV</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet"><!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag("js", new Date());
+  gtag("config", "G-XXXXXXX");
+</script>
+
   </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+  <body class="bg-gray-950 text-white font-sans">
+    <header class="bg-gradient-to-r from-purple-700 to-fuchsia-600 py-6 shadow-xl text-center">
+      <h1 class="text-4xl font-bold">📺 Toonix TV</h1>
+      <p class="text-sm text-gray-200">Movies, Anime, Cartoons & More – All in One Place</p>
+    </header><main class="p-4 space-y-12">
+  <!-- Search Bar -->
+  <div class="flex justify-center mt-6">
+    <input type="text" placeholder="Search Movies, Shows, Cartoons..." class="px-4 py-2 w-full max-w-lg rounded-xl text-black">
+  </div>
+
+  <!-- Hero Section -->
+  <section class="text-center">
+    <h2 class="text-3xl font-semibold mb-2">🔥 Trending Now</h2>
+    <p class="text-gray-400 mb-4">Updated regularly with fresh content from every category!</p>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <img src="https://via.placeholder.com/200x300?text=Naruto" alt="Naruto" class="rounded-xl shadow-xl">
+      <img src="https://via.placeholder.com/200x300?text=Avengers" alt="Avengers" class="rounded-xl shadow-xl">
+      <img src="https://via.placeholder.com/200x300?text=Doraemon" alt="Doraemon" class="rounded-xl shadow-xl">
+      <img src="https://via.placeholder.com/200x300?text=Jujutsu+Kaisen" alt="JJK" class="rounded-xl shadow-xl">
+    </div>
+  </section>
+
+  <!-- Telegram Join Widget -->
+  <section class="text-center">
+    <h2 class="text-2xl font-semibold mb-2">📣 Join Our Telegram Channel</h2>
+    <div class="flex justify-center">
+      <script async src="https://telegram.org/js/telegram-widget.js?22"
+              data-telegram="ToonixTV"
+              data-size="large"
+              data-radius="10"
+              data-auth-url=""
+              data-request-access="write">
+      </script>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section>
+    <h2 class="text-2xl font-semibold mb-4 text-center">🚀 Features You’ll Love</h2>
+    <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <li class="bg-gray-800 p-4 rounded-xl shadow">🔍 Powerful search by title, genre, or type</li>
+      <li class="bg-gray-800 p-4 rounded-xl shadow">🎞️ Watch trailers instantly</li>
+      <li class="bg-gray-800 p-4 rounded-xl shadow">⚡ One-click download access</li>
+      <li class="bg-gray-800 p-4 rounded-xl shadow">🌍 Works worldwide 24/7</li>
+      <li class="bg-gray-800 p-4 rounded-xl shadow">💬 Telegram chat support & community</li>
+      <li class="bg-gray-800 p-4 rounded-xl shadow">📁 Latest folders + curated content packs</li>
+      <li class="bg-gray-800 p-4 rounded-xl shadow">🧠 Smart filters by category/year/type</li>
+      <li class="bg-gray-800 p-4 rounded-xl shadow">🌙 Beautiful dark UI with mobile-first design</li>
+      <li class="bg-gray-800 p-4 rounded-xl shadow">🧩 Categories: Movies, Series, Anime, Cartoons, Dubbed, Subbed</li>
+      <li class="bg-gray-800 p-4 rounded-xl shadow">🎯 Direct links to new uploads via Telegram</li>
+    </ul>
+  </section>
+
+  <!-- CTA -->
+  <section class="text-center">
+    <h2 class="text-xl font-bold mt-8">✨ Follow @ToonixTV and never miss a single update!</h2>
+    <p class="text-sm text-gray-400">New content added daily based on requests and trends.</p>
+  </section>
+
+  <!-- Footer -->
+  <footer class="text-center text-gray-500 mt-10 pb-4">
+    <p>© 2025 Toonix TV. Made with ❤️ for fans, by fans.</p>
+  </footer>
+</main>
+
   </body>
 </html>
