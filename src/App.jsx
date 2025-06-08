@@ -1,4 +1,3 @@
-
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-gray-950 text-white font-sans">
@@ -8,7 +7,6 @@ export default function HomePage() {
       </header>
 
       <section className="p-4 grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        {/* Sample content cards */}
         {['One Piece', 'Spider-Man: Into the Spider-Verse', 'Naruto', 'Rick and Morty'].map((title, idx) => (
           <div key={idx} className="bg-gray-800 rounded-2xl p-4 shadow-lg hover:shadow-pink-500 transition-shadow">
             <div className="h-40 bg-gray-700 rounded-xl mb-4"></div>
