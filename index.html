@@ -2,7 +2,7 @@
 <html lang="en" >
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>Toonix TV - Hollywood VFX Ultra Edition</title>
 
   <!-- Tailwind CSS -->
@@ -14,8 +14,35 @@
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet" />
 
-  <!-- tsParticles -->
-  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+  <!-- tsParticles (will conditionally load) -->
+  <script>
+    // Check if device is mobile
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    // Only load tsParticles if not mobile
+    if (!isMobile) {
+      const script = document.createElement('script');
+      script.src = "https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js";
+      script.defer = true;
+      document.head.appendChild(script);
+      script.onload = () => {
+        tsParticles.load("tsparticles", {
+          fpsLimit: 60,
+          particles: {
+            number: { value: 50 },
+            color: { value: "#0ff" },
+            shape: { type: "circle" },
+            opacity: { value: 0.5 },
+            size: { value: 2 },
+            move: { enable: true, speed: 1 },
+            links: { enable: true, distance: 150, color: "#0ff", opacity: 0.3, width: 1 },
+          },
+          interactivity: { events: { onhover: { enable: true, mode: "grab" } } },
+          detectRetina: true,
+        });
+      };
+    }
+  </script>
 
   <style>
     body {
@@ -23,47 +50,43 @@
       background: radial-gradient(circle at center, #000011 0%, #0a001a 100%);
       color: white;
       overflow-x: hidden;
-      perspective: 1500px; /* for 3D card hover */
-      filter: drop-shadow(0 0 0.75rem #0ff);
-      /* subtle vignette */
+      perspective: 1500px;
+      filter: drop-shadow(0 0 0.5rem #0ff);
       position: relative;
+      margin: 0;
+      padding: 0;
     }
 
-    /* Vignette overlay */
     body::before {
       content: "";
       pointer-events: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      box-shadow: inset 0 0 200px 90px #000a;
+      box-shadow: inset 0 0 150px 70px #000a;
       z-index: 999;
       mix-blend-mode: multiply;
     }
 
-    /* Neon Flicker Glow Layers - smoother */
+    /* Neon text simpler flicker */
     .neon-text {
       color: #fff;
       text-shadow:
-        0 0 6px #fff,
-        0 0 15px #f0f,
-        0 0 30px #f0f,
-        0 0 60px #0ff,
-        0 0 120px #0ff,
-        0 0 180px #f0f;
-      animation: flickerNeon 4s infinite alternate ease-in-out;
+        0 0 8px #fff,
+        0 0 20px #0ff,
+        0 0 40px #f0f;
+      animation: flickerNeon 3s infinite alternate ease-in-out;
     }
     @keyframes flickerNeon {
-      0%, 100% { text-shadow: 0 0 15px #f0f, 0 0 30px #0ff, 0 0 45px #f0f; opacity: 1; }
-      45%, 55% { text-shadow: 0 0 6px #f0f, 0 0 20px #0ff; opacity: 0.85; }
-      50% { text-shadow: none; opacity: 0.65; }
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.85; }
     }
 
-    /* Multi-layer glitch refined */
+    /* Glitch text (simplified) */
     .glitch {
       position: relative;
       color: #fff;
       font-weight: 900;
-      font-size: 3.5rem;
+      font-size: 2.5rem;
       animation: glitchAnim 3s infinite;
       user-select: none;
       perspective: 800px;
@@ -79,19 +102,19 @@
       mix-blend-mode: screen;
     }
     .glitch::before {
-      left: 3px;
-      text-shadow: -3px 0 #f00;
+      left: 2px;
+      text-shadow: -2px 0 #f00;
       animation: glitchMove1 3s infinite;
     }
     .glitch::after {
-      left: -3px;
-      text-shadow: -3px 0 #0ff;
+      left: -2px;
+      text-shadow: -2px 0 #0ff;
       animation: glitchMove2 3s infinite;
       clip-path: polygon(0 75%, 100% 70%, 100% 100%, 0 98%);
     }
     @keyframes glitchAnim {
       0%, 20%, 40%, 60%, 80%, 100% { transform: translate(0) skew(0deg); }
-      10%, 30%, 50%, 70%, 90% { transform: translate(-3px, 3px) skew(-3deg); }
+      10%, 30%, 50%, 70%, 90% { transform: translate(-2px, 2px) skew(-2deg); }
     }
     @keyframes glitchMove1 {
       0%, 20%, 40%, 60%, 80%, 100% { clip-path: polygon(0 2%, 100% 0%, 100% 25%, 0 30%); }
@@ -102,71 +125,34 @@
       10%, 30%, 50%, 70%, 90% { clip-path: polygon(0 85%, 100% 80%, 100% 100%, 0 100%); }
     }
 
-    /* Glassmorphism cards with animated shadows and reflections */
+    /* Glass cards - simpler blur & shadows */
     .glass {
-      backdrop-filter: blur(35px) saturate(180%);
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(15px) saturate(150%);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       box-shadow:
-        0 0 25px rgba(0, 255, 255, 0.4),
-        0 0 45px rgba(255, 0, 255, 0.35),
-        inset 0 0 40px rgba(255, 255, 255, 0.1);
-      transition: box-shadow 0.4s ease, transform 0.4s ease;
+        0 0 15px rgba(0, 255, 255, 0.3),
+        0 0 25px rgba(255, 0, 255, 0.25),
+        inset 0 0 20px rgba(255, 255, 255, 0.07);
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
       cursor: pointer;
       perspective: 1000px;
       position: relative;
       overflow: hidden;
-      filter: drop-shadow(0 0 6px #f0f);
+      filter: drop-shadow(0 0 4px #f0f);
     }
-
-    /* Flickering shine overlay on cards */
-    .glass::before {
-      content: "";
-      position: absolute;
-      top: -50%;
-      left: -30%;
-      width: 160%;
-      height: 200%;
-      background: linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 100%);
-      transform: rotate(25deg);
-      animation: shineMove 4s linear infinite;
-      pointer-events: none;
-      mix-blend-mode: screen;
-      opacity: 0.4;
-      border-radius: 1rem;
-    }
-    @keyframes shineMove {
-      0% { transform: translateX(-100%) rotate(25deg); opacity: 0.3; }
-      50% { opacity: 0.6; }
-      100% { transform: translateX(100%) rotate(25deg); opacity: 0.3; }
-    }
-
-    /* 3D Parallax Hover on Cards */
     .glass:hover {
       box-shadow:
-        0 0 45px #0ff,
-        0 0 80px #f0f,
-        0 0 100px #0ff,
-        0 0 140px #f0f;
-      transform: translateZ(50px) scale(1.1);
-      transition: transform 0.5s ease, box-shadow 0.5s ease;
-      filter: drop-shadow(0 0 10px #f0f);
+        0 0 30px #0ff,
+        0 0 50px #f0f,
+        0 0 60px #0ff,
+        0 0 80px #f0f;
+      transform: translateZ(30px) scale(1.05);
+      filter: drop-shadow(0 0 7px #f0f);
       z-index: 2;
     }
-    .glass:active {
-      transform: scale(0.95);
-      box-shadow: 0 0 70px #ff00ff;
-    }
 
-    /* Parallax effect with mouse (JS) */
-    .parallax {
-      transform-style: preserve-3d;
-      will-change: transform;
-      transition: transform 0.3s ease;
-      will-change: transform;
-    }
-
-    /* Intro full screen video background + fade out */
+    /* Intro video - hide on mobile */
     #intro {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -177,7 +163,7 @@
       justify-content: center;
       overflow: hidden;
       pointer-events: none;
-      animation: introFadeOut 7s ease forwards 4s; /* show for 4s then fade */
+      animation: introFadeOut 7s ease forwards 4s;
     }
     #intro video {
       position: absolute;
@@ -189,22 +175,23 @@
       height: auto;
       transform: translate(-50%, -50%);
       object-fit: cover;
-      filter: brightness(0.25) contrast(1.3) saturate(1.2);
+      filter: brightness(0.3) contrast(1.3) saturate(1.1);
       z-index: -1;
       mix-blend-mode: screen;
     }
     #intro .intro-text {
       position: relative;
-      font-size: 5rem;
+      font-size: 3rem;
       color: #fff;
       text-shadow:
-        0 0 12px #f0f,
-        0 0 40px #0ff,
-        0 0 75px #f0f,
-        0 0 120px #0ff;
+        0 0 8px #f0f,
+        0 0 20px #0ff,
+        0 0 40px #f0f;
       animation: zoomIn 2s ease-out forwards;
-      filter: drop-shadow(0 0 15px #ff00ff);
+      filter: drop-shadow(0 0 10px #ff00ff);
       user-select: none;
+      text-align: center;
+      padding: 0 1rem;
     }
     @keyframes zoomIn {
       from {transform: scale(0);}
@@ -216,13 +203,33 @@
       100% {opacity: 0; pointer-events: none;}
     }
 
-    /* Neon animated search input with shimmer */
+    /* Hide intro video & lens flare on mobile */
+    @media (max-width: 768px) {
+      #intro, #lensFlare {
+        display: none !important;
+      }
+      .glitch {
+        font-size: 2rem !important;
+      }
+      /* Search input full width */
+      #searchInput {
+        width: 90% !important;
+        font-size: 1.1rem !important;
+      }
+      /* Glass card scale smaller */
+      .glass {
+        filter: none !important;
+        backdrop-filter: blur(10px) !important;
+      }
+    }
+
+    /* Search input with neon shimmer */
     #searchInput {
       background: rgba(0,0,0,0.85);
       border: 2px solid #f0f;
       box-shadow:
-        0 0 25px #f0f,
-        inset 0 0 10px #f0f;
+        0 0 20px #f0f,
+        inset 0 0 8px #f0f;
       border-radius: 1rem;
       color: white;
       font-weight: 700;
@@ -231,100 +238,50 @@
       width: 80%;
       max-width: 480px;
       outline: none;
-      transition: 0.4s;
+      transition: 0.3s;
       animation: pulseGlow 3.5s ease-in-out infinite;
       position: relative;
       overflow: hidden;
+      margin: 1rem auto;
+      display: block;
     }
     #searchInput::placeholder {
       color: #ccc;
-      text-shadow: 0 0 8px #f0f;
+      text-shadow: 0 0 6px #f0f;
       font-style: italic;
     }
     #searchInput:focus {
       border-color: #0ff;
       box-shadow:
-        0 0 50px #0ff,
-        0 0 80px #f0f;
+        0 0 40px #0ff,
+        0 0 60px #f0f;
       background: rgba(30,0,30,0.95);
     }
     @keyframes pulseGlow {
       0%, 100% {
-        box-shadow: 0 0 12px #f0f;
+        box-shadow: 0 0 10px #f0f;
         background: rgba(0,0,0,0.8);
       }
       50% {
-        box-shadow: 0 0 40px #0ff;
+        box-shadow: 0 0 30px #0ff;
         background: rgba(25,0,30,0.9);
       }
     }
 
-    /* Category Buttons with glitch flicker & neon pulse */
-    .category-btn {
-      background: linear-gradient(45deg, #ff00ff, #00ffff);
-      color: white;
-      font-weight: 900;
-      border-radius: 1rem;
-      padding: 0.9rem 2rem;
-      box-shadow:
-        0 0 12px #0ff,
-        0 0 30px #f0f;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      user-select: none;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      animation: colorShift 6s ease infinite alternate, btnGlitch 10s linear infinite;
-      position: relative;
-      overflow: hidden;
-    }
-    .category-btn::before {
-      content: "";
-      position: absolute;
-      top: -50%;
-      left: -25%;
-      width: 150%;
-      height: 150%;
-      background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.25) 50%, transparent 100%);
-      transform: rotate(25deg);
-      animation: shineMove 4s linear infinite;
-      pointer-events: none;
-      mix-blend-mode: screen;
-      opacity: 0.4;
-      border-radius: 1rem;
-      z-index: 1;
-    }
-    .category-btn:hover {
-      box-shadow:
-        0 0 35px #f0f,
-        0 0 60px #0ff,
-        0 0 85px #ff00ff;
-      transform: scale(1.15) translateY(-5px);
-      z-index: 3;
-      animation-play-state: paused;
-    }
-    .category-btn:active {
-      transform: scale(0.95);
-    }
-    @keyframes colorShift {
-      0% { background-position: 0% 50%; }
-      100% { background-position: 100% 50%; }
-    }
-    @keyframes btnGlitch {
-      0%, 50%, 100% { filter: none; }
-      25%, 75% { filter: url(#glitch); }
+    /* Container to center content with padding */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 1rem 4rem 1rem;
     }
 
-    /* Content cards fade + slide up on scroll with smooth easing */
-    .item {
-      opacity: 0;
-      transform: translateY(50px);
-      transition: opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1), transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
-      will-change: opacity, transform;
-    }
-    .item.visible {
-      opacity: 1;
-      transform: translateY(0);
+    /* Footer styling */
+    footer {
+      color: #888;
+      text-shadow: 0 0 5px #444;
+      padding: 1rem 0;
+      text-align: center;
+      font-size: 0.9rem;
     }
 
     /* Telegram join button with pulsing neon */
@@ -346,6 +303,8 @@
       text-transform: uppercase;
       letter-spacing: 0.1em;
       animation: pulseBtn 3s ease-in-out infinite;
+      display: inline-block;
+      margin: 2rem auto 4rem;
     }
     .telegram-btn:hover {
       box-shadow:
@@ -361,34 +320,6 @@
       0%, 100% { filter: drop-shadow(0 0 18px #9f2fff); }
       50% { filter: drop-shadow(0 0 40px #30d5f6); }
     }
-
-    /* Footer styling */
-    footer {
-      color: #888;
-      text-shadow: 0 0 5px #444;
-      padding: 1rem 0;
-      text-align: center;
-      font-size: 0.9rem;
-    }
-
-    /* Lens flare overlay */
-    #lensFlare {
-      pointer-events: none;
-      position: fixed;
-      top: 15%;
-      left: 80%;
-      width: 250px;
-      height: 250px;
-      background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%);
-      filter: blur(40px) brightness(3);
-      mix-blend-mode: screen;
-      animation: flarePulse 6s ease-in-out infinite;
-      z-index: 1000;
-    }
-    @keyframes flarePulse {
-      0%, 100% { opacity: 0.6; filter: blur(40px) brightness(3); }
-      50% { opacity: 1; filter: blur(50px) brightness(4); }
-    }
   </style>
 </head>
 <body>
@@ -397,169 +328,74 @@
   <div id="lensFlare"></div>
 
   <!-- Intro with full screen video -->
-  <div id="intro">
+  <div id="intro" aria-label="Intro animation">
     <video autoplay muted loop playsinline src="https://cdn.pixabay.com/vimeo/408822911/space-nebula-16507.mp4"></video>
     <div class="intro-text neon-text glitch" data-text="TOONIX TV">TOONIX TV</div>
   </div>
 
   <!-- tsParticles Background -->
-  <div id="tsparticles" class="fixed inset-0 -z-10"></div>
+  <div id="tsparticles" class="fixed inset-0 -z-10" aria-hidden="true"></div>
 
-  <!-- Header -->
-  <header class="flex flex-col items-center py-8 space-y-6">
-    <h1 class="glitch neon-text text-5xl md:text-7xl select-none">Toonix TV</h1>
-    <input
-      id="searchInput"
-      type="search"
-      placeholder="Search movies, anime, cartoons..."
-      aria-label="Search"
-      autocomplete="off"
-    />
-    <nav class="flex flex-wrap justify-center gap-4 mt-4 px-4 max-w-4xl">
+  <div class="container">
+
+    <header class="text-center mb-8">
+      <h1 class="neon-text glitch" data-text="TOONIX TV">TOONIX TV</h1>
+      <input
+        type="search"
+        id="searchInput"
+        placeholder="Search movies, anime, cartoons..."
+        aria-label="Search content"
+      />
+    </header>
+
+    <!-- Category Buttons -->
+    <section class="flex flex-wrap justify-center gap-4 mb-12">
       <button class="category-btn">Movies</button>
       <button class="category-btn">Anime</button>
       <button class="category-btn">Cartoons</button>
       <button class="category-btn">Shows</button>
-      <button class="category-btn">English</button>
-      <button class="category-btn">Telugu</button>
-      <button class="category-btn">Hindi</button>
-      <button class="category-btn">Latest</button>
-    </nav>
-  </header>
+    </section>
 
-  <!-- Main Content Grid -->
-  <main class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 px-6 pb-16 max-w-7xl mx-auto">
-    <!-- Example Movie Card -->
-    <article class="glass item parallax" tabindex="0" aria-label="Movie: Cyberpunk 2077 Trailer">
-      <img
-        src="https://cdn.pixabay.com/photo/2020/06/25/21/40/cyberpunk-5336728_1280.jpg"
-        alt="Cyberpunk 2077 Trailer Poster"
-        loading="lazy"
-        class="rounded-lg w-full h-64 object-cover mb-4 transition-transform duration-500 ease-in-out"
-      />
-      <h2 class="text-xl font-extrabold neon-text">Cyberpunk 2077</h2>
-      <p class="text-sm text-gray-300">Trailer & Highlights</p>
-      <button
-        class="category-btn mt-4 w-full"
-        aria-label="Watch Cyberpunk 2077 Trailer"
-      >
-        Watch Now
-      </button>
-    </article>
+    <!-- Content Cards (example) -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div class="glass p-6 item">
+        <h2 class="text-xl font-bold mb-2">Movie Title 1</h2>
+        <p>Exciting Hollywood movie description with VFX.</p>
+      </div>
+      <div class="glass p-6 item">
+        <h2 class="text-xl font-bold mb-2">Anime Title 2</h2>
+        <p>Popular anime with stunning animation.</p>
+      </div>
+      <div class="glass p-6 item">
+        <h2 class="text-xl font-bold mb-2">Cartoon Title 3</h2>
+        <p>Classic cartoons for all ages.</p>
+      </div>
+    </section>
 
-    <!-- Repeat above card structure for multiple items -->
-    <!-- Add more cards here or dynamically generate -->
+    <div class="text-center mt-12">
+      <a href="https://t.me/ToonixTV" target="_blank" rel="noopener" class="telegram-btn" aria-label="Join Toonix TV Telegram Channel">Join Telegram Channel</a>
+    </div>
 
-  </main>
-
-  <!-- Telegram Join Button -->
-  <div class="fixed bottom-8 right-8">
-    <a
-      href="https://t.me/ToonixTV"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="telegram-btn"
-      aria-label="Join Toonix TV Telegram Channel"
-    >
-      Join Telegram
-    </a>
   </div>
 
-  <!-- Footer -->
   <footer>
-    © 2025 Toonix TV | All rights reserved | Crafted with VFX & CGI magic
+    &copy; 2025 Toonix TV. All rights reserved.
   </footer>
 
   <script>
-    // Initialize tsParticles for ultra cool particle background
-    tsParticles.load("tsparticles", {
-      fpsLimit: 60,
-      background: {
-        color: "#000011"
-      },
-      particles: {
-        number: {
-          value: 80,
-          density: { enable: true, area: 1200 }
-        },
-        color: { value: ["#00ffff", "#ff00ff", "#ffffff"] },
-        shape: { type: "circle" },
-        opacity: {
-          value: 0.7,
-          random: true,
-          anim: { enable: true, speed: 1, opacity_min: 0.2, sync: false }
-        },
-        size: {
-          value: 3,
-          random: { enable: true, minimumValue: 1 },
-          anim: { enable: true, speed: 4, size_min: 0.5, sync: false }
-        },
-        move: {
-          enable: true,
-          speed: 1.5,
-          direction: "none",
-          random: true,
-          straight: false,
-          outMode: "out",
-          attract: { enable: false }
-        },
-        links: {
-          enable: true,
-          distance: 150,
-          color: "#0ff",
-          opacity: 0.25,
-          width: 1
-        }
-      },
-      interactivity: {
-        events: {
-          onHover: { enable: true, mode: "grab" },
-          onClick: { enable: true, mode: "push" },
-          resize: true
-        },
-        modes: {
-          grab: { distance: 170, links: { opacity: 0.7 } },
-          push: { quantity: 4 }
-        }
-      },
-      detectRetina: true
-    });
-
-    // Parallax effect for cards with mouse move
-    const parallaxElements = document.querySelectorAll(".parallax");
-    window.addEventListener("mousemove", (e) => {
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
-      const maxRotation = 15; // degrees max rotation
-
-      parallaxElements.forEach((el) => {
-        const rect = el.getBoundingClientRect();
-        const elX = rect.left + rect.width / 2;
-        const elY = rect.top + rect.height / 2;
-
-        const deltaX = (e.clientX - elX) / centerX;
-        const deltaY = (e.clientY - elY) / centerY;
-
-        const rotateX = maxRotation * deltaY * -1;
-        const rotateY = maxRotation * deltaX;
-
-        el.style.transform = `translateZ(50px) scale(1.05) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-      });
-    });
-
-    // Scroll fade in for content items
-    const items = document.querySelectorAll(".item");
+    // Scroll animation for items
+    const items = document.querySelectorAll('.item');
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
+      entries => {
+        entries.forEach(entry => {
           if (entry.isIntersecting) {
-            entry.target.classList.add("visible");
+            entry.target.classList.add('visible');
           }
         });
       },
-      { threshold: 0.2 }
+      { threshold: 0.1 }
     );
-    items.forEach((item) => observer.observe(item));
+    items.forEach(item => observer.observe(item));
   </script>
 </body>
 </html>
