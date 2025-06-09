@@ -97,5 +97,62 @@
 </header>
 
 <!-- Search and Filters -->
-<section class
-  
+<section class="p-4 text-center animate__animated animate__fadeInUp">
+  <input
+    id="searchInput"
+    type="text"
+    placeholder="🔍 Search movies, animes, shows..."
+    oninput="searchContent()"
+    class="w-full p-3 mb-6 border border-purple-300 rounded-xl text-black"
+  />
+
+  <div class="flex flex-wrap justify-center gap-2 mb-8">
+    <button onclick="filterCategory('All')" class="bg-white text-purple-700 px-5 py-2 rounded-full hover:bg-purple-600 hover:text-white">All</button>
+    <button onclick="filterCategory('Anime')" class="bg-red-500 px-5 py-2 rounded-full hover:bg-red-600">Anime</button>
+    <button onclick="filterCategory('Movie')" class="bg-blue-500 px-5 py-2 rounded-full hover:bg-blue-600">Movies</button>
+    <button onclick="filterCategory('Cartoon')" class="bg-green-500 px-5 py-2 rounded-full hover:bg-green-600">Cartoons</button>
+    <button onclick="filterCategory('Show')" class="bg-yellow-500 px-5 py-2 rounded-full hover:bg-yellow-600">Shows</button>
+  </div>
+</section>
+
+<!-- Content Grid -->
+<section class="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 px-4">
+  <div data-category="Anime" class="item bg-white text-black rounded-2xl shadow-2xl p-4 transform hover:scale-105 transition duration-500 hover:rotate-1 hover:shadow-purple-400">
+    <a href="https://t.me/Toonix_TV" target="_blank">
+      <img src="https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p194893_b_v12_aa.jpg" class="rounded-xl mb-3" />
+      <h2 class="text-2xl font-bold">Naruto</h2>
+      <p class="text-gray-600 text-sm">Anime</p>
+    </a>
+  </div>
+
+  <div data-category="Movie" class="item bg-white text-black rounded-2xl shadow-2xl p-4 transform hover:scale-105 transition duration-500 hover:rotate-1 hover:shadow-purple-400">
+    <a href="https://t.me/Toonix_TV" target="_blank">
+      <img src="https://i0.wp.com/thedigitaltheater.com/wp-content/uploads/2019/03/Endgame.jpg" class="rounded-xl mb-3" />
+      <h2 class="text-2xl font-bold">Avengers: Endgame</h2>
+      <p class="text-gray-600 text-sm">Movie</p>
+    </a>
+  </div>
+
+  <div data-category="Cartoon" class="item bg-white text-black rounded-2xl shadow-2xl p-4 transform hover:scale-105 transition duration-500 hover:rotate-1 hover:shadow-purple-400">
+    <a href="https://t.me/Toonix_TV" target="_blank">
+      <img src="https://toppng.com/uploads/preview/tom-and-jerry-cartoon-logo-11530958763kr0rjegb2w.png" class="rounded-xl mb-3" />
+      <h2 class="text-2xl font-bold">Tom and Jerry</h2>
+      <p class="text-gray-600 text-sm">Cartoon</p>
+    </a>
+  </div>
+
+  <div data-category="Show" class="item bg-white text-black rounded-2xl shadow-2xl p-4 transform hover:scale-105 transition duration-500 hover:rotate-1 hover:shadow-purple-400">
+    <a href="https://t.me/Toonix_TV" target="_blank">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Stranger_Things_Logo_UBX.jpg/2048px-Stranger_Things_Logo_UBX.jpg" class="rounded-xl mb-3" />
+      <h2 class="text-2xl font-bold">Stranger Things</h2>
+      <p class="text-gray-600 text-sm">Show</p>
+    </a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="mt-14 mb-10 text-center text-sm text-purple-300">
+  &copy; 2025 Toonix TV. All rights reserved.
+</footer>
+</body>
+</html>
