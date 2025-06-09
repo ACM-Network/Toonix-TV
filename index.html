@@ -1,401 +1,171 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>Toonix TV - Hollywood VFX Ultra Edition</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Toonix TV - M3U8 Video Player</title>
 
-  <!-- Tailwind CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+<!-- Tailwind CSS -->
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+<!-- Animate.css -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet" />
+<!-- Video.js CSS -->
+<link href="https://vjs.zencdn.net/7.22.1/video-js.css" rel="stylesheet" />
 
-  <!-- Animate.css -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
+<!-- tsParticles -->
+<script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet" />
+<style>
+  body {
+    font-family: 'Orbitron', sans-serif;
+    background: radial-gradient(circle at center, #000011 0%, #0a001a 100%);
+    color: white;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
 
-  <!-- tsParticles (will conditionally load) -->
-  <script>
-    // Check if device is mobile
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  .neon-text {
+    color: #fff;
+    text-shadow: 0 0 5px #fff, 0 0 20px #f0f, 0 0 30px #0ff, 0 0 40px #f0f;
+  }
 
-    // Only load tsParticles if not mobile
-    if (!isMobile) {
-      const script = document.createElement('script');
-      script.src = "https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js";
-      script.defer = true;
-      document.head.appendChild(script);
-      script.onload = () => {
-        tsParticles.load("tsparticles", {
-          fpsLimit: 60,
-          particles: {
-            number: { value: 50 },
-            color: { value: "#0ff" },
-            shape: { type: "circle" },
-            opacity: { value: 0.5 },
-            size: { value: 2 },
-            move: { enable: true, speed: 1 },
-            links: { enable: true, distance: 150, color: "#0ff", opacity: 0.3, width: 1 },
-          },
-          interactivity: { events: { onhover: { enable: true, mode: "grab" } } },
-          detectRetina: true,
-        });
-      };
-    }
-  </script>
+  .glass {
+    backdrop-filter: blur(20px);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  }
 
-  <style>
-    body {
-      font-family: 'Orbitron', sans-serif;
-      background: radial-gradient(circle at center, #000011 0%, #0a001a 100%);
-      color: white;
-      overflow-x: hidden;
-      perspective: 1500px;
-      filter: drop-shadow(0 0 0.5rem #0ff);
-      position: relative;
-      margin: 0;
-      padding: 0;
-    }
+  .glow-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px #0ff, 0 0 40px #f0f;
+  }
 
-    body::before {
-      content: "";
-      pointer-events: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      box-shadow: inset 0 0 150px 70px #000a;
-      z-index: 999;
-      mix-blend-mode: multiply;
-    }
+  .video-container {
+    max-width: 900px;
+    margin: auto;
+    padding: 1rem;
+  }
 
-    /* Neon text simpler flicker */
-    .neon-text {
-      color: #fff;
-      text-shadow:
-        0 0 8px #fff,
-        0 0 20px #0ff,
-        0 0 40px #f0f;
-      animation: flickerNeon 3s infinite alternate ease-in-out;
-    }
-    @keyframes flickerNeon {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.85; }
-    }
+  /* Playlist grid styling */
+  .playlist {
+    max-width: 900px;
+    margin: 2rem auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+    gap: 1rem;
+  }
 
-    /* Glitch text (simplified) */
-    .glitch {
-      position: relative;
-      color: #fff;
-      font-weight: 900;
-      font-size: 2.5rem;
-      animation: glitchAnim 3s infinite;
-      user-select: none;
-      perspective: 800px;
-    }
-    .glitch::before,
-    .glitch::after {
-      content: attr(data-text);
-      position: absolute;
-      left: 0;
-      right: 0;
-      opacity: 0.85;
-      clip-path: polygon(0 2%, 100% 0%, 100% 25%, 0 30%);
-      mix-blend-mode: screen;
-    }
-    .glitch::before {
-      left: 2px;
-      text-shadow: -2px 0 #f00;
-      animation: glitchMove1 3s infinite;
-    }
-    .glitch::after {
-      left: -2px;
-      text-shadow: -2px 0 #0ff;
-      animation: glitchMove2 3s infinite;
-      clip-path: polygon(0 75%, 100% 70%, 100% 100%, 0 98%);
-    }
-    @keyframes glitchAnim {
-      0%, 20%, 40%, 60%, 80%, 100% { transform: translate(0) skew(0deg); }
-      10%, 30%, 50%, 70%, 90% { transform: translate(-2px, 2px) skew(-2deg); }
-    }
-    @keyframes glitchMove1 {
-      0%, 20%, 40%, 60%, 80%, 100% { clip-path: polygon(0 2%, 100% 0%, 100% 25%, 0 30%); }
-      10%, 30%, 50%, 70%, 90% { clip-path: polygon(0 10%, 100% 5%, 100% 35%, 0 40%); }
-    }
-    @keyframes glitchMove2 {
-      0%, 20%, 40%, 60%, 80%, 100% { clip-path: polygon(0 75%, 100% 70%, 100% 100%, 0 98%); }
-      10%, 30%, 50%, 70%, 90% { clip-path: polygon(0 85%, 100% 80%, 100% 100%, 0 100%); }
-    }
+  .playlist-item {
+    cursor: pointer;
+    border-radius: 1rem;
+  }
 
-    /* Glass cards - simpler blur & shadows */
-    .glass {
-      backdrop-filter: blur(15px) saturate(150%);
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow:
-        0 0 15px rgba(0, 255, 255, 0.3),
-        0 0 25px rgba(255, 0, 255, 0.25),
-        inset 0 0 20px rgba(255, 255, 255, 0.07);
-      transition: box-shadow 0.3s ease, transform 0.3s ease;
-      cursor: pointer;
-      perspective: 1000px;
-      position: relative;
-      overflow: hidden;
-      filter: drop-shadow(0 0 4px #f0f);
-    }
-    .glass:hover {
-      box-shadow:
-        0 0 30px #0ff,
-        0 0 50px #f0f,
-        0 0 60px #0ff,
-        0 0 80px #f0f;
-      transform: translateZ(30px) scale(1.05);
-      filter: drop-shadow(0 0 7px #f0f);
-      z-index: 2;
-    }
+  .playlist-item:hover {
+    box-shadow: 0 0 15px #0ff, 0 0 30px #f0f;
+    transform: scale(1.03);
+  }
 
-    /* Intro video - hide on mobile */
-    #intro {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: black;
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      pointer-events: none;
-      animation: introFadeOut 7s ease forwards 4s;
+  /* Responsive adjustments */
+  @media (max-width: 640px) {
+    .video-container {
+      padding: 0.5rem;
     }
-    #intro video {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      min-width: 100%;
-      min-height: 100%;
-      width: auto;
-      height: auto;
-      transform: translate(-50%, -50%);
-      object-fit: cover;
-      filter: brightness(0.3) contrast(1.3) saturate(1.1);
-      z-index: -1;
-      mix-blend-mode: screen;
-    }
-    #intro .intro-text {
-      position: relative;
-      font-size: 3rem;
-      color: #fff;
-      text-shadow:
-        0 0 8px #f0f,
-        0 0 20px #0ff,
-        0 0 40px #f0f;
-      animation: zoomIn 2s ease-out forwards;
-      filter: drop-shadow(0 0 10px #ff00ff);
-      user-select: none;
-      text-align: center;
-      padding: 0 1rem;
-    }
-    @keyframes zoomIn {
-      from {transform: scale(0);}
-      to {transform: scale(1);}
-    }
-    @keyframes introFadeOut {
-      0% {opacity: 1;}
-      85% {opacity: 1;}
-      100% {opacity: 0; pointer-events: none;}
-    }
+  }
+</style>
 
-    /* Hide intro video & lens flare on mobile */
-    @media (max-width: 768px) {
-      #intro, #lensFlare {
-        display: none !important;
-      }
-      .glitch {
-        font-size: 2rem !important;
-      }
-      /* Search input full width */
-      #searchInput {
-        width: 90% !important;
-        font-size: 1.1rem !important;
-      }
-      /* Glass card scale smaller */
-      .glass {
-        filter: none !important;
-        backdrop-filter: blur(10px) !important;
-      }
-    }
-
-    /* Search input with neon shimmer */
-    #searchInput {
-      background: rgba(0,0,0,0.85);
-      border: 2px solid #f0f;
-      box-shadow:
-        0 0 20px #f0f,
-        inset 0 0 8px #f0f;
-      border-radius: 1rem;
-      color: white;
-      font-weight: 700;
-      font-size: 1.3rem;
-      padding: 1rem 1.5rem;
-      width: 80%;
-      max-width: 480px;
-      outline: none;
-      transition: 0.3s;
-      animation: pulseGlow 3.5s ease-in-out infinite;
-      position: relative;
-      overflow: hidden;
-      margin: 1rem auto;
-      display: block;
-    }
-    #searchInput::placeholder {
-      color: #ccc;
-      text-shadow: 0 0 6px #f0f;
-      font-style: italic;
-    }
-    #searchInput:focus {
-      border-color: #0ff;
-      box-shadow:
-        0 0 40px #0ff,
-        0 0 60px #f0f;
-      background: rgba(30,0,30,0.95);
-    }
-    @keyframes pulseGlow {
-      0%, 100% {
-        box-shadow: 0 0 10px #f0f;
-        background: rgba(0,0,0,0.8);
-      }
-      50% {
-        box-shadow: 0 0 30px #0ff;
-        background: rgba(25,0,30,0.9);
-      }
-    }
-
-    /* Container to center content with padding */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 1rem 1rem 4rem 1rem;
-    }
-
-    /* Footer styling */
-    footer {
-      color: #888;
-      text-shadow: 0 0 5px #444;
-      padding: 1rem 0;
-      text-align: center;
-      font-size: 0.9rem;
-    }
-
-    /* Telegram join button with pulsing neon */
-    .telegram-btn {
-      background: linear-gradient(135deg, #9f2fff, #30d5f6);
-      box-shadow:
-        0 0 30px #30d5f6,
-        0 0 60px #9f2fff,
-        0 0 90px #30d5f6;
-      padding: 1.5rem 3rem;
-      border-radius: 9999px;
-      font-weight: 900;
-      font-size: 1.75rem;
-      color: white;
-      text-shadow: 0 0 18px #9f2fff;
-      cursor: pointer;
-      user-select: none;
-      transition: all 0.4s ease;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      animation: pulseBtn 3s ease-in-out infinite;
-      display: inline-block;
-      margin: 2rem auto 4rem;
-    }
-    .telegram-btn:hover {
-      box-shadow:
-        0 0 70px #30d5f6,
-        0 0 120px #9f2fff,
-        0 0 180px #30d5f6;
-      transform: scale(1.2) rotate(-3deg);
-    }
-    .telegram-btn:active {
-      transform: scale(0.95) rotate(0deg);
-    }
-    @keyframes pulseBtn {
-      0%, 100% { filter: drop-shadow(0 0 18px #9f2fff); }
-      50% { filter: drop-shadow(0 0 40px #30d5f6); }
-    }
-  </style>
 </head>
 <body>
 
-  <!-- Lens Flare Overlay -->
-  <div id="lensFlare"></div>
+<!-- tsParticles Background -->
+<div id="tsparticles" class="absolute inset-0 -z-10"></div>
 
-  <!-- Intro with full screen video -->
-  <div id="intro" aria-label="Intro animation">
-    <video autoplay muted loop playsinline src="https://cdn.pixabay.com/vimeo/408822911/space-nebula-16507.mp4"></video>
-    <div class="intro-text neon-text glitch" data-text="TOONIX TV">TOONIX TV</div>
-  </div>
+<header class="text-center p-6 animate__animated animate__fadeInDown">
+  <h1 class="text-5xl neon-text mb-4">🚀 Toonix TV M3U8 Player</h1>
+</header>
 
-  <!-- tsParticles Background -->
-  <div id="tsparticles" class="fixed inset-0 -z-10" aria-hidden="true"></div>
+<div class="video-container glass p-4 rounded-xl">
+  <video
+    id="my-video"
+    class="video-js vjs-default-skin vjs-big-play-centered"
+    controls
+    preload="auto"
+    width="100%"
+    height="360"
+    data-setup='{}'
+  >
+    <!-- Video.js will load M3U8 -->
+  </video>
+</div>
 
-  <div class="container">
+<div class="playlist px-6">
+  <!-- Playlist items will be generated by JS -->
+</div>
 
-    <header class="text-center mb-8">
-      <h1 class="neon-text glitch" data-text="TOONIX TV">TOONIX TV</h1>
-      <input
-        type="search"
-        id="searchInput"
-        placeholder="Search movies, anime, cartoons..."
-        aria-label="Search content"
-      />
-    </header>
+<script src="https://vjs.zencdn.net/7.22.1/video.min.js"></script>
 
-    <!-- Category Buttons -->
-    <section class="flex flex-wrap justify-center gap-4 mb-12">
-      <button class="category-btn">Movies</button>
-      <button class="category-btn">Anime</button>
-      <button class="category-btn">Cartoons</button>
-      <button class="category-btn">Shows</button>
-    </section>
+<script>
+  // Sample playlist - replace URLs with your real M3U8 streams supporting multiple audio tracks
+  const playlist = [
+    {
+      title: "Avengers: Endgame (Trailer)",
+      src: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8",
+      thumbnail: "https://i0.wp.com/thedigitaltheater.com/wp-content/uploads/2019/03/Endgame.jpg",
+    },
+    {
+      title: "Naruto Episode 1",
+      src: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+      thumbnail: "https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p194893_b_v12_aa.jpg",
+    },
+    {
+      title: "Stranger Things (Sample Stream)",
+      src: "https://moctest-streams.net/hls/stream.m3u8", // Dummy link, replace with real stream
+      thumbnail: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Stranger_Things_Logo_UBX.jpg/2048px-Stranger_Things_Logo_UBX.jpg",
+    },
+  ];
 
-    <!-- Content Cards (example) -->
-    <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      <div class="glass p-6 item">
-        <h2 class="text-xl font-bold mb-2">Movie Title 1</h2>
-        <p>Exciting Hollywood movie description with VFX.</p>
-      </div>
-      <div class="glass p-6 item">
-        <h2 class="text-xl font-bold mb-2">Anime Title 2</h2>
-        <p>Popular anime with stunning animation.</p>
-      </div>
-      <div class="glass p-6 item">
-        <h2 class="text-xl font-bold mb-2">Cartoon Title 3</h2>
-        <p>Classic cartoons for all ages.</p>
-      </div>
-    </section>
-
-    <div class="text-center mt-12">
-      <a href="https://t.me/ToonixTV" target="_blank" rel="noopener" class="telegram-btn" aria-label="Join Toonix TV Telegram Channel">Join Telegram Channel</a>
-    </div>
-
-  </div>
-
-  <footer>
-    &copy; 2025 Toonix TV. All rights reserved.
-  </footer>
-
-  <script>
-    // Scroll animation for items
-    const items = document.querySelectorAll('.item');
-    const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-          }
-        });
+  const player = videojs('my-video', {
+    fluid: true,
+    html5: {
+      hls: {
+        overrideNative: true,
       },
-      { threshold: 0.1 }
-    );
-    items.forEach(item => observer.observe(item));
-  </script>
+    },
+  });
+
+  // Load first video by default
+  player.src({ src: playlist[0].src, type: "application/x-mpegURL" });
+
+  // Build playlist UI
+  const playlistContainer = document.querySelector('.playlist');
+  playlist.forEach((item, index) => {
+    const card = document.createElement('div');
+    card.className = 'playlist-item glass p-4 glow-card';
+    card.innerHTML = `
+      <img src="${item.thumbnail}" alt="${item.title}" class="rounded-lg mb-2 w-full" />
+      <h3 class="text-lg font-bold neon-text">${item.title}</h3>
+    `;
+    card.onclick = () => {
+      player.src({ src: item.src, type: "application/x-mpegURL" });
+      player.play();
+    };
+    playlistContainer.appendChild(card);
+  });
+
+  // tsParticles config for neon particles
+  tsParticles.load("tsparticles", {
+    fullScreen: { enable: true, zIndex: -1 },
+    particles: {
+      number: { value: 90 },
+      size: { value: 3 },
+      color: { value: "#f0f" },
+      move: { enable: true, speed: 1 },
+      links: { enable: true, color: "#0ff", distance: 150 }
+    }
+  });
+</script>
+
 </body>
 </html>
