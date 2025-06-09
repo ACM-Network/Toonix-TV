@@ -24,33 +24,49 @@
       color: white;
       overflow-x: hidden;
       perspective: 1500px; /* for 3D card hover */
+      filter: drop-shadow(0 0 0.75rem #0ff);
+      /* subtle vignette */
+      position: relative;
     }
 
-    /* Neon Flicker Glow Layers */
+    /* Vignette overlay */
+    body::before {
+      content: "";
+      pointer-events: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      box-shadow: inset 0 0 200px 90px #000a;
+      z-index: 999;
+      mix-blend-mode: multiply;
+    }
+
+    /* Neon Flicker Glow Layers - smoother */
     .neon-text {
       color: #fff;
       text-shadow:
-        0 0 5px #fff,
-        0 0 10px #f0f,
-        0 0 20px #f0f,
-        0 0 40px #0ff,
-        0 0 80px #0ff,
-        0 0 90px #f0f;
-      animation: flickerNeon 3s infinite alternate ease-in-out;
+        0 0 6px #fff,
+        0 0 15px #f0f,
+        0 0 30px #f0f,
+        0 0 60px #0ff,
+        0 0 120px #0ff,
+        0 0 180px #f0f;
+      animation: flickerNeon 4s infinite alternate ease-in-out;
     }
-
     @keyframes flickerNeon {
-      0%, 100% { text-shadow: 0 0 10px #f0f, 0 0 20px #0ff, 0 0 30px #f0f; opacity: 1; }
-      50% { text-shadow: 0 0 3px #f0f, 0 0 10px #0ff; opacity: 0.8; }
+      0%, 100% { text-shadow: 0 0 15px #f0f, 0 0 30px #0ff, 0 0 45px #f0f; opacity: 1; }
+      45%, 55% { text-shadow: 0 0 6px #f0f, 0 0 20px #0ff; opacity: 0.85; }
+      50% { text-shadow: none; opacity: 0.65; }
     }
 
-    /* Multi-layer glitch */
+    /* Multi-layer glitch refined */
     .glitch {
       position: relative;
       color: #fff;
       font-weight: 900;
-      font-size: 3rem;
-      animation: glitchAnim 2s infinite;
+      font-size: 3.5rem;
+      animation: glitchAnim 3s infinite;
+      user-select: none;
+      perspective: 800px;
     }
     .glitch::before,
     .glitch::after {
@@ -58,24 +74,24 @@
       position: absolute;
       left: 0;
       right: 0;
-      opacity: 0.8;
+      opacity: 0.85;
       clip-path: polygon(0 2%, 100% 0%, 100% 25%, 0 30%);
+      mix-blend-mode: screen;
     }
     .glitch::before {
-      left: 2px;
-      text-shadow: -2px 0 #f00;
-      animation: glitchMove1 2s infinite;
+      left: 3px;
+      text-shadow: -3px 0 #f00;
+      animation: glitchMove1 3s infinite;
     }
     .glitch::after {
-      left: -2px;
-      text-shadow: -2px 0 #0ff;
-      animation: glitchMove2 2s infinite;
+      left: -3px;
+      text-shadow: -3px 0 #0ff;
+      animation: glitchMove2 3s infinite;
       clip-path: polygon(0 75%, 100% 70%, 100% 100%, 0 98%);
     }
-
     @keyframes glitchAnim {
-      0%, 20%, 40%, 60%, 80%, 100% { transform: translate(0); }
-      10%, 30%, 50%, 70%, 90% { transform: translate(-2px, 2px); }
+      0%, 20%, 40%, 60%, 80%, 100% { transform: translate(0) skew(0deg); }
+      10%, 30%, 50%, 70%, 90% { transform: translate(-3px, 3px) skew(-3deg); }
     }
     @keyframes glitchMove1 {
       0%, 20%, 40%, 60%, 80%, 100% { clip-path: polygon(0 2%, 100% 0%, 100% 25%, 0 30%); }
@@ -86,41 +102,71 @@
       10%, 30%, 50%, 70%, 90% { clip-path: polygon(0 85%, 100% 80%, 100% 100%, 0 100%); }
     }
 
-    /* Glassmorphism cards with dynamic shadows */
+    /* Glassmorphism cards with animated shadows and reflections */
     .glass {
-      backdrop-filter: blur(30px);
-      background: rgba(255, 255, 255, 0.07);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(35px) saturate(180%);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       box-shadow:
-        0 0 20px rgba(0, 255, 255, 0.3),
-        0 0 40px rgba(255, 0, 255, 0.25);
-      transition: box-shadow 0.3s ease, transform 0.3s ease;
+        0 0 25px rgba(0, 255, 255, 0.4),
+        0 0 45px rgba(255, 0, 255, 0.35),
+        inset 0 0 40px rgba(255, 255, 255, 0.1);
+      transition: box-shadow 0.4s ease, transform 0.4s ease;
       cursor: pointer;
       perspective: 1000px;
+      position: relative;
+      overflow: hidden;
+      filter: drop-shadow(0 0 6px #f0f);
+    }
+
+    /* Flickering shine overlay on cards */
+    .glass::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -30%;
+      width: 160%;
+      height: 200%;
+      background: linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 100%);
+      transform: rotate(25deg);
+      animation: shineMove 4s linear infinite;
+      pointer-events: none;
+      mix-blend-mode: screen;
+      opacity: 0.4;
+      border-radius: 1rem;
+    }
+    @keyframes shineMove {
+      0% { transform: translateX(-100%) rotate(25deg); opacity: 0.3; }
+      50% { opacity: 0.6; }
+      100% { transform: translateX(100%) rotate(25deg); opacity: 0.3; }
     }
 
     /* 3D Parallax Hover on Cards */
     .glass:hover {
       box-shadow:
-        0 0 30px #0ff,
-        0 0 60px #f0f,
-        0 0 80px #0ff,
-        0 0 100px #f0f;
-      transform: translateZ(40px) scale(1.07);
-      transition: transform 0.4s ease, box-shadow 0.4s ease;
+        0 0 45px #0ff,
+        0 0 80px #f0f,
+        0 0 100px #0ff,
+        0 0 140px #f0f;
+      transform: translateZ(50px) scale(1.1);
+      transition: transform 0.5s ease, box-shadow 0.5s ease;
+      filter: drop-shadow(0 0 10px #f0f);
+      z-index: 2;
     }
     .glass:active {
-      transform: scale(0.97);
-      box-shadow: 0 0 50px #ff00ff;
+      transform: scale(0.95);
+      box-shadow: 0 0 70px #ff00ff;
     }
 
-    /* Parallax effect */
+    /* Parallax effect with mouse (JS) */
     .parallax {
       transform-style: preserve-3d;
       will-change: transform;
+      transition: transform 0.3s ease;
+      will-change: transform;
     }
 
-    /* Intro full screen video background */
+    /* Intro full screen video background + fade out */
     #intro {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -130,6 +176,8 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      pointer-events: none;
+      animation: introFadeOut 7s ease forwards 4s; /* show for 4s then fade */
     }
     #intro video {
       position: absolute;
@@ -141,86 +189,119 @@
       height: auto;
       transform: translate(-50%, -50%);
       object-fit: cover;
-      filter: brightness(0.3) contrast(1.2);
+      filter: brightness(0.25) contrast(1.3) saturate(1.2);
       z-index: -1;
+      mix-blend-mode: screen;
     }
     #intro .intro-text {
       position: relative;
-      font-size: 4rem;
+      font-size: 5rem;
       color: #fff;
       text-shadow:
-        0 0 10px #f0f,
-        0 0 30px #0ff,
-        0 0 60px #f0f,
-        0 0 90px #0ff;
+        0 0 12px #f0f,
+        0 0 40px #0ff,
+        0 0 75px #f0f,
+        0 0 120px #0ff;
       animation: zoomIn 2s ease-out forwards;
+      filter: drop-shadow(0 0 15px #ff00ff);
+      user-select: none;
     }
     @keyframes zoomIn {
       from {transform: scale(0);}
       to {transform: scale(1);}
     }
+    @keyframes introFadeOut {
+      0% {opacity: 1;}
+      85% {opacity: 1;}
+      100% {opacity: 0; pointer-events: none;}
+    }
 
-    /* Neon animated search input */
+    /* Neon animated search input with shimmer */
     #searchInput {
-      background: rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.85);
       border: 2px solid #f0f;
-      box-shadow: 0 0 20px #f0f;
+      box-shadow:
+        0 0 25px #f0f,
+        inset 0 0 10px #f0f;
       border-radius: 1rem;
       color: white;
       font-weight: 700;
-      font-size: 1.25rem;
+      font-size: 1.3rem;
       padding: 1rem 1.5rem;
       width: 80%;
-      max-width: 450px;
+      max-width: 480px;
       outline: none;
-      transition: 0.3s;
-      animation: pulseGlow 3s ease-in-out infinite;
+      transition: 0.4s;
+      animation: pulseGlow 3.5s ease-in-out infinite;
+      position: relative;
+      overflow: hidden;
     }
     #searchInput::placeholder {
       color: #ccc;
-      text-shadow: 0 0 5px #f0f;
+      text-shadow: 0 0 8px #f0f;
       font-style: italic;
     }
     #searchInput:focus {
       border-color: #0ff;
       box-shadow:
-        0 0 30px #0ff,
-        0 0 50px #f0f;
+        0 0 50px #0ff,
+        0 0 80px #f0f;
+      background: rgba(30,0,30,0.95);
     }
     @keyframes pulseGlow {
       0%, 100% {
-        box-shadow: 0 0 10px #f0f;
-        background: rgba(0,0,0,0.7);
+        box-shadow: 0 0 12px #f0f;
+        background: rgba(0,0,0,0.8);
       }
       50% {
-        box-shadow: 0 0 30px #0ff;
-        background: rgba(20,0,20,0.9);
+        box-shadow: 0 0 40px #0ff;
+        background: rgba(25,0,30,0.9);
       }
     }
 
-    /* Category Buttons */
+    /* Category Buttons with glitch flicker & neon pulse */
     .category-btn {
       background: linear-gradient(45deg, #ff00ff, #00ffff);
       color: white;
-      font-weight: 700;
+      font-weight: 900;
       border-radius: 1rem;
-      padding: 0.75rem 1.5rem;
+      padding: 0.9rem 2rem;
       box-shadow:
-        0 0 10px #0ff,
-        0 0 20px #f0f;
+        0 0 12px #0ff,
+        0 0 30px #f0f;
       transition: all 0.3s ease;
       cursor: pointer;
       user-select: none;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      animation: colorShift 5s ease infinite alternate;
+      letter-spacing: 0.12em;
+      animation: colorShift 6s ease infinite alternate, btnGlitch 10s linear infinite;
+      position: relative;
+      overflow: hidden;
+    }
+    .category-btn::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -25%;
+      width: 150%;
+      height: 150%;
+      background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.25) 50%, transparent 100%);
+      transform: rotate(25deg);
+      animation: shineMove 4s linear infinite;
+      pointer-events: none;
+      mix-blend-mode: screen;
+      opacity: 0.4;
+      border-radius: 1rem;
+      z-index: 1;
     }
     .category-btn:hover {
       box-shadow:
-        0 0 25px #f0f,
-        0 0 40px #0ff,
-        0 0 60px #ff00ff;
-      transform: scale(1.1) translateY(-3px);
+        0 0 35px #f0f,
+        0 0 60px #0ff,
+        0 0 85px #ff00ff;
+      transform: scale(1.15) translateY(-5px);
+      z-index: 3;
+      animation-play-state: paused;
     }
     .category-btn:active {
       transform: scale(0.95);
@@ -229,52 +310,91 @@
       0% { background-position: 0% 50%; }
       100% { background-position: 100% 50%; }
     }
+    @keyframes btnGlitch {
+      0%, 50%, 100% { filter: none; }
+      25%, 75% { filter: url(#glitch); }
+    }
 
-    /* Content cards fade + slide up on scroll */
+    /* Content cards fade + slide up on scroll with smooth easing */
     .item {
       opacity: 0;
-      transform: translateY(40px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
+      transform: translateY(50px);
+      transition: opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1), transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: opacity, transform;
     }
     .item.visible {
       opacity: 1;
       transform: translateY(0);
     }
 
-    /* Telegram join button */
+    /* Telegram join button with pulsing neon */
     .telegram-btn {
       background: linear-gradient(135deg, #9f2fff, #30d5f6);
-      box-shadow: 0 0 30px #30d5f6;
+      box-shadow:
+        0 0 30px #30d5f6,
+        0 0 60px #9f2fff,
+        0 0 90px #30d5f6;
       padding: 1.5rem 3rem;
       border-radius: 9999px;
       font-weight: 900;
       font-size: 1.75rem;
       color: white;
-      text-shadow: 0 0 15px #9f2fff;
+      text-shadow: 0 0 18px #9f2fff;
       cursor: pointer;
       user-select: none;
       transition: all 0.4s ease;
       text-transform: uppercase;
       letter-spacing: 0.1em;
+      animation: pulseBtn 3s ease-in-out infinite;
     }
     .telegram-btn:hover {
       box-shadow:
-        0 0 50px #30d5f6,
-        0 0 80px #9f2fff,
-        0 0 120px #30d5f6;
-      transform: scale(1.1) rotate(-2deg);
+        0 0 70px #30d5f6,
+        0 0 120px #9f2fff,
+        0 0 180px #30d5f6;
+      transform: scale(1.2) rotate(-3deg);
     }
     .telegram-btn:active {
       transform: scale(0.95) rotate(0deg);
     }
+    @keyframes pulseBtn {
+      0%, 100% { filter: drop-shadow(0 0 18px #9f2fff); }
+      50% { filter: drop-shadow(0 0 40px #30d5f6); }
+    }
 
+    /* Footer styling */
     footer {
       color: #888;
       text-shadow: 0 0 5px #444;
+      padding: 1rem 0;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    /* Lens flare overlay */
+    #lensFlare {
+      pointer-events: none;
+      position: fixed;
+      top: 15%;
+      left: 80%;
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%);
+      filter: blur(40px) brightness(3);
+      mix-blend-mode: screen;
+      animation: flarePulse 6s ease-in-out infinite;
+      z-index: 1000;
+    }
+    @keyframes flarePulse {
+      0%, 100% { opacity: 0.6; filter: blur(40px) brightness(3); }
+      50% { opacity: 1; filter: blur(50px) brightness(4); }
     }
   </style>
 </head>
 <body>
+
+  <!-- Lens Flare Overlay -->
+  <div id="lensFlare"></div>
 
   <!-- Intro with full screen video -->
   <div id="intro">
@@ -286,205 +406,4 @@
   <div id="tsparticles" class="fixed inset-0 -z-10"></div>
 
   <!-- Header -->
-  <header class="text-center p-6 animate__animated animate__fadeInDown">
-    <img
-      src="https://cdn5.cdn-telegram.org/file/pftpARIH3rlNmSXjwODWJ64OjWO9gDGtpK2ivS3QbHIBhWsXITN05ZTMFeo7-81HA65WnMwigigUOdIXKSqQHvazIpvl-PX5z3mNtn68M9dybjH3fFBzVMTtwB4NLDh2Nxg9wt2zvPCk0LQbaUwOCc6RllJbeIwXOKBvepuMzU-zok2WHdP7UnIyJ_1tjskTZ8Zno1RfxetABHO_eXQXpdAtUZSuhlZWg5dsl38caBkPbCjmLp9SLsJzr4KPabmI5TzOQX0ft6N96SiPnGv9olzSq1AOOGjaH98xtM_NMrq-G0WoTWzdIR3Es2XZ_78_03e64aKD5T9ajLhwmAY5pg.jpg"
-      alt="Toonix TV Logo"
-      class="h-28 w-28 mx-auto rounded-full border-4 border-purple-500 cursor-pointer glow-card parallax"
-      onclick="window.open('https://t.me/Toonix_TV','_blank')"
-      loading="lazy"
-    />
-    <h1 class="glitch mt-4 text-5xl select-none" data-text="TOONIX TV">TOONIX TV</h1>
-  </header>
-
-  <!-- Search -->
-  <div class="text-center my-6">
-    <input
-      id="searchInput"
-      oninput="searchContent()"
-      placeholder="Search..."
-      class="search-input"
-      autocomplete="off"
-      spellcheck="false"
-    />
-  </div>
-
-  <!-- Category Buttons -->
-  <div class="flex justify-center gap-6 mb-6 flex-wrap px-4">
-    <button class="category-btn" onclick="filterCategory('All')">All</button>
-    <button class="category-btn" onclick="filterCategory('Anime')">Anime</button>
-    <button class="category-btn" onclick="filterCategory('Movie')">Movies</button>
-    <button class="category-btn" onclick="filterCategory('Cartoon')">Cartoons</button>
-    <button class="category-btn" onclick="filterCategory('Show')">Shows</button>
-  </div>
-
-  <!-- Content -->
-  <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 p-6 px-4">
-    <div data-category="Anime" class="item glass p-5 rounded-xl glow-card parallax" tabindex="0" role="article" aria-label="Naruto Anime">
-      <img
-        src="https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p194893_b_v12_aa.jpg"
-        alt="Naruto"
-        class="rounded-lg mb-5 shadow-lg"
-        loading="lazy"
-      />
-      <h2 class="text-2xl font-extrabold neon-text">Naruto</h2>
-      <p class="text-lg text-cyan-300">Anime</p>
-    </div>
-    <div data-category="Movie" class="item glass p-5 rounded-xl glow-card parallax" tabindex="0" role="article" aria-label="Avengers Endgame Movie">
-      <img
-        src="https://i0.wp.com/thedigitaltheater.com/wp-content/uploads/2019/03/Endgame.jpg"
-        alt="Avengers: Endgame"
-        class="rounded-lg mb-5 shadow-lg"
-        loading="lazy"
-      />
-      <h2 class="text-2xl font-extrabold neon-text">Avengers: Endgame</h2>
-      <p class="text-lg text-cyan-300">Movie</p>
-    </div>
-    <div data-category="Cartoon" class="item glass p-5 rounded-xl glow-card parallax" tabindex="0" role="article" aria-label="Tom and Jerry Cartoon">
-      <img
-        src="https://toppng.com/uploads/preview/tom-and-jerry-cartoon-logo-11530958763kr0rjegb2w.png"
-        alt="Tom & Jerry"
-        class="rounded-lg mb-5 shadow-lg"
-        loading="lazy"
-      />
-      <h2 class="text-2xl font-extrabold neon-text">Tom & Jerry</h2>
-      <p class="text-lg text-cyan-300">Cartoon</p>
-    </div>
-    <div data-category="Show" class="item glass p-5 rounded-xl glow-card parallax" tabindex="0" role="article" aria-label="Stranger Things Show">
-      <img
-        src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Stranger_Things_Logo_UBX.jpg/2048px-Stranger_Things_Logo_UBX.jpg"
-        alt="Stranger Things"
-        class="rounded-lg mb-5 shadow-lg"
-        loading="lazy"
-      />
-      <h2 class="text-2xl font-extrabold neon-text">Stranger Things</h2>
-      <p class="text-lg text-cyan-300">Show</p>
-    </div>
-  </main>
-
-  <!-- Telegram Button -->
-  <div class="text-center my-12">
-    <a href="https://t.me/Toonix_TV" target="_blank" class="telegram-btn" aria-label="Join Toonix TV on Telegram">
-      Join Toonix TV on Telegram 🚀
-</a>
-  </div>
-
-  <!-- Footer -->
-  <footer class="text-center p-6 text-sm select-none">
-    © 2025 Toonix TV — All Rights Reserved
-  </footer>
-
-  <!-- Scripts -->
-
-  <!-- Initialize tsParticles -->
-  <script>
-    tsParticles.load("tsparticles", {
-      fullScreen: { enable: true, zIndex: -10 },
-      fpsLimit: 60,
-      particles: {
-        number: { value: 100, density: { enable: true, area: 800 } },
-        color: { value: ["#00ffff", "#ff00ff", "#ffffff"] },
-        shape: { type: "circle" },
-        opacity: {
-          value: 0.8,
-          random: { enable: true, minimumValue: 0.3 },
-          anim: { enable: true, speed: 1, opacityMin: 0.3, sync: false }
-        },
-        size: {
-          value: 2,
-          random: { enable: true, minimumValue: 1 },
-          anim: { enable: true, speed: 2, sizeMin: 0.5, sync: false }
-        },
-        links: {
-          enable: true,
-          distance: 120,
-          color: "#ff00ff",
-          opacity: 0.3,
-          width: 1
-        },
-        move: {
-          enable: true,
-          speed: 1.5,
-          direction: "none",
-          random: false,
-          straight: false,
-          outModes: { default: "bounce" },
-          attract: { enable: true, rotateX: 600, rotateY: 1200 }
-        }
-      },
-      interactivity: {
-        detectsOn: "canvas",
-        events: {
-          onHover: { enable: true, mode: "grab" },
-          onClick: { enable: true, mode: "push" },
-          resize: true
-        },
-        modes: {
-          grab: { distance: 140, links: { opacity: 0.6 } },
-          push: { quantity: 4 }
-        }
-      },
-      detectRetina: true
-    });
-  </script>
-
-  <!-- Search and Filter Functions -->
-  <script>
-    const items = document.querySelectorAll('.item');
-
-    function filterCategory(category) {
-      items.forEach(item => {
-        if (category === 'All' || item.dataset.category === category) {
-          item.classList.add('visible');
-          item.style.display = 'block';
-        } else {
-          item.classList.remove('visible');
-          item.style.display = 'none';
-        }
-      });
-    }
-
-    function searchContent() {
-      const query = document.getElementById('searchInput').value.toLowerCase();
-      items.forEach(item => {
-        const title = item.querySelector('h2').textContent.toLowerCase();
-        const category = item.dataset.category.toLowerCase();
-        if (title.includes(query) || category.includes(query)) {
-          item.classList.add('visible');
-          item.style.display = 'block';
-        } else {
-          item.classList.remove('visible');
-          item.style.display = 'none';
-        }
-      });
-    }
-
-    // On page load, show all items with animation
-    window.addEventListener('load', () => {
-      filterCategory('All');
-    });
-
-    // Scroll fade-in animation for items
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-        }
-      });
-    }, { threshold: 0.1 });
-
-    items.forEach(item => observer.observe(item));
-
-    // Intro video removal after 5 seconds
-    setTimeout(() => {
-      const intro = document.getElementById('intro');
-      if (intro) {
-        intro.style.transition = 'opacity 1s ease';
-        intro.style.opacity = '0';
-        setTimeout(() => intro.remove(), 1000);
-      }
-    }, 5000);
-  </script>
-
-</body>
-</html>
+  <
