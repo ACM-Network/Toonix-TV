@@ -1,137 +1,101 @@
-<!DOCTYPE html><html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Toonix TV</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
-    <style>
-      body {
-        background: radial-gradient(circle at top left, #ffccff, #ffffff);
-        overflow-x: hidden;
-      }
-      .logo-glow {
-        animation: glow 2s infinite alternate;
-      }
-      @keyframes glow {
-        from {
-          text-shadow: 0 0 10px #fff, 0 0 20px #f0f, 0 0 30px #f0f;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Toonix TV</title>
+
+  <!-- Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+
+  <!-- Animate.css -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet"/>
+
+  <!-- Custom Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet" />
+
+  <!-- Particle Background -->
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Orbitron', sans-serif;
+      overflow-x: hidden;
+    }
+    .logo-glow {
+      animation: glow 2s infinite alternate;
+    }
+    @keyframes glow {
+      from { filter: drop-shadow(0 0 10px #fff); }
+      to { filter: drop-shadow(0 0 20px #f0f); }
+    }
+    #popup {
+      display: none;
+    }
+  </style>
+
+  <script>
+    function searchContent() {
+      const input = document.getElementById('searchInput').value.toLowerCase();
+      const items = document.querySelectorAll('.item');
+      items.forEach(item => {
+        item.style.display = item.innerText.toLowerCase().includes(input) ? 'block' : 'none';
+      });
+    }
+
+    function filterCategory(category) {
+      const items = document.querySelectorAll('.item');
+      items.forEach(item => {
+        item.style.display = category === 'All' || item.dataset.category === category ? 'block' : 'none';
+      });
+    }
+
+    function showPopup() {
+      document.getElementById("popup").style.display = "flex";
+    }
+
+    function closePopup() {
+      document.getElementById("popup").style.display = "none";
+    }
+
+    window.onload = function () {
+      showPopup();
+      tsParticles.load("tsparticles", {
+        fullScreen: { enable: true, zIndex: -1 },
+        particles: {
+          number: { value: 60 },
+          size: { value: 3 },
+          color: { value: "#a855f7" },
+          move: { enable: true, speed: 2 },
+          links: { enable: true, color: "#c084fc", distance: 150 }
         }
-        to {
-          text-shadow: 0 0 20px #ff0, 0 0 30px #f0f, 0 0 40px #0ff;
-        }
-      }
-      .intro-screen {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: #000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        flex-direction: column;
-      }
-      .intro-screen h1 {
-        color: #fff;
-        font-size: 3rem;
-        text-shadow: 0 0 20px #0ff;
-      }
-      .intro-hidden {
-        display: none;
-      }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-    <script>
-      window.onload = () => {
-        setTimeout(() => {
-          document.getElementById('intro').classList.add('intro-hidden');
-        }, 3000);
-        AOS.init();
-      };
-      function searchContent() {
-        const input = document.getElementById('searchInput').value.toLowerCase();
-        const items = document.querySelectorAll('.item');
-        items.forEach(item => {
-          item.style.display = item.innerText.toLowerCase().includes(input)
-            ? 'block'
-            : 'none';
-        });
-      }
-      function filterCategory(category) {
-        const items = document.querySelectorAll('.item');
-        items.forEach(item => {
-          item.style.display = category === 'All' || item.dataset.category === category ? 'block' : 'none';
-        });
-      }
-    </script>
-  </head>
-  <body class="font-sans">
-    <div id="intro" class="intro-screen">
-      <h1 class="animate__animated animate__fadeInDown">🌟 Welcome to Toonix TV 🌟</h1>
-    </div><header onclick="window.open('https://t.me/Toonix_TV','_blank')" class="cursor-pointer bg-purple-700 p-5 text-white text-center text-4xl font-extrabold animate__animated animate__fadeInDown logo-glow">
-  📺 Toonix TV
+      });
+    };
+  </script>
+</head>
+
+<body class="bg-gradient-to-b from-purple-900 via-black to-purple-900 text-white relative">
+
+<!-- Particle Background -->
+<div id="tsparticles"></div>
+
+<!-- Popup Join Telegram -->
+<div id="popup" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-70 items-center justify-center z-50">
+  <div class="bg-purple-800 p-6 rounded-xl text-center shadow-xl animate__animated animate__bounceIn">
+    <h2 class="text-2xl mb-4">🎉 Join Toonix TV on Telegram!</h2>
+    <a href="https://t.me/Toonix_TV" target="_blank" class="bg-pink-600 hover:bg-pink-700 text-white px-6 py-3 rounded-full shadow-lg text-lg font-bold">Join Now</a>
+    <br/><button onclick="closePopup()" class="mt-4 text-gray-200 underline">No Thanks</button>
+  </div>
+</div>
+
+<!-- Header -->
+<header class="p-6 text-center">
+  <img onclick="location.href='https://t.me/Toonix_TV'" src="https://cdn5.cdn-telegram.org/file/pftpARIH3rlNmSXjwODWJ64OjWO9gDGtpK2ivS3QbHIBhWsXITN05ZTMFeo7-81HA65WnMwigigUOdIXKSqQHvazIpvl-PX5z3mNtn68M9dybjH3fFBzVMTtwB4NLDh2Nxg9wt2zvPCk0LQbaUwOCc6RllJbeIwXOKBvepuMzU-zok2WHdP7UnIyJ_1tjskTZ8Zno1RfxetABHO_eXQXpdAtUZSuhlZWg5dsl38caBkPbCjmLp9SLsJzr4KPabmI5TzOQX0ft6N96SiPnGv9olzSq1AOOGjaH98xtM_NMrq-G0WoTWzdIR3Es2XZ_78_03e64aKD5T9ajLhwmAY5pg.jpg"
+    alt="Toonix TV Logo"
+    class="mx-auto h-24 w-24 rounded-full border-4 border-purple-500 cursor-pointer logo-glow animate__animated animate__fadeInDown"/>
+  <h1 class="text-5xl font-extrabold mt-4 animate__animated animate__zoomIn">Toonix TV</h1>
 </header>
 
-<div class="fixed bottom-4 left-4 bg-purple-700 text-white px-4 py-2 rounded-xl shadow-xl animate__animated animate__bounceIn animate__delay-3s z-50">
-  👋 Join our channel 👉 <a class="underline" href="https://t.me/Toonix_TV" target="_blank">Toonix TV</a>
-</div>
-
-<div class="p-4 animate__animated animate__fadeInUp">
-  <input id="searchInput" type="text" placeholder="Search movies, animes, shows..." oninput="searchContent()" class="w-full p-3 mb-6 border border-purple-500 rounded-md shadow-md" />
-
-  <div class="flex flex-wrap gap-2 justify-center mb-6">
-    <button onclick="filterCategory('All')" class="px-4 py-2 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition transform hover:scale-110">All</button>
-    <button onclick="filterCategory('Anime')" class="px-4 py-2 bg-red-400 text-white rounded-full hover:bg-red-500 transition transform hover:scale-110">Anime</button>
-    <button onclick="filterCategory('Movie')" class="px-4 py-2 bg-blue-400 text-white rounded-full hover:bg-blue-500 transition transform hover:scale-110">Movies</button>
-    <button onclick="filterCategory('Cartoon')" class="px-4 py-2 bg-green-400 text-white rounded-full hover:bg-green-500 transition transform hover:scale-110">Cartoons</button>
-    <button onclick="filterCategory('Show')" class="px-4 py-2 bg-yellow-400 text-white rounded-full hover:bg-yellow-500 transition transform hover:scale-110">Shows</button>
-  </div>
-
-  <div class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-    <div onclick="window.open('https://t.me/Toonix_TV','_blank')" data-category="Anime" class="item bg-white p-4 rounded-xl shadow-xl transform hover:scale-105 transition duration-500 animate__animated animate__zoomIn" data-aos="fade-up">
-      <img src="https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p194893_b_v12_aa.jpg" class="mb-3 w-full rounded-lg shadow-md" />
-      <h2 class="text-2xl font-bold">Naruto</h2>
-      <p class="text-sm text-gray-600">Anime</p>
-    </div>
-
-    <div onclick="window.open('https://t.me/Toonix_TV','_blank')" data-category="Movie" class="item bg-white p-4 rounded-xl shadow-xl transform hover:scale-105 transition duration-500 animate__animated animate__zoomIn" data-aos="fade-up" data-aos-delay="100">
-      <img src="https://i0.wp.com/thedigitaltheater.com/wp-content/uploads/2019/03/Endgame.jpg" class="mb-3 w-full rounded-lg shadow-md" />
-      <h2 class="text-2xl font-bold">Avengers: Endgame</h2>
-      <p class="text-sm text-gray-600">Movie</p>
-    </div>
-
-    <div onclick="window.open('https://t.me/Toonix_TV','_blank')" data-category="Cartoon" class="item bg-white p-4 rounded-xl shadow-xl transform hover:scale-105 transition duration-500 animate__animated animate__zoomIn" data-aos="fade-up" data-aos-delay="200">
-      <img src="https://toppng.com/uploads/preview/tom-and-jerry-cartoon-logo-11530958763kr0rjegb2w.png" class="mb-3 w-full rounded-lg shadow-md" />
-      <h2 class="text-2xl font-bold">Tom and Jerry</h2>
-      <p class="text-sm text-gray-600">Cartoon</p>
-    </div>
-
-    <div onclick="window.open('https://t.me/Toonix_TV','_blank')" data-category="Show" class="item bg-white p-4 rounded-xl shadow-xl transform hover:scale-105 transition duration-500 animate__animated animate__zoomIn" data-aos="fade-up" data-aos-delay="300">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Stranger_Things_Logo_UBX.jpg/2048px-Stranger_Things_Logo_UBX.jpg" class="mb-3 w-full rounded-lg shadow-md" />
-      <h2 class="text-2xl font-bold">Stranger Things</h2>
-      <p class="text-sm text-gray-600">Show</p>
-    </div>
-  </div>
-
-  <div class="mt-12 bg-purple-50 p-6 rounded-xl shadow-md animate__animated animate__fadeInUp">
-    <h3 class="text-3xl font-semibold mb-4">🔥 Watch Trailers</h3>
-    <iframe class="w-full aspect-video rounded-xl" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
-  </div>
-
-  <div class="mt-10 text-center animate__animated animate__pulse animate__infinite">
-    <a href="https://t.me/Toonix_TV" class="inline-block px-8 py-4 bg-purple-600 text-white text-xl font-bold rounded-full hover:bg-purple-800 shadow-xl transition transform hover:scale-110" target="_blank">
-      👉 Join our Telegram
-    </a>
-  </div>
-
-  <footer class="mt-14 text-center text-sm text-gray-600 animate__animated animate__fadeInUp">
-    &copy; 2025 Toonix TV. All rights reserved.
-  </footer>
-</div>
-
-  </body>
-</html>
+<!-- Search and Filters -->
+<section class
+  
