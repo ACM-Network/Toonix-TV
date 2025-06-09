@@ -406,4 +406,160 @@
   <div id="tsparticles" class="fixed inset-0 -z-10"></div>
 
   <!-- Header -->
-  <
+  <header class="flex flex-col items-center py-8 space-y-6">
+    <h1 class="glitch neon-text text-5xl md:text-7xl select-none">Toonix TV</h1>
+    <input
+      id="searchInput"
+      type="search"
+      placeholder="Search movies, anime, cartoons..."
+      aria-label="Search"
+      autocomplete="off"
+    />
+    <nav class="flex flex-wrap justify-center gap-4 mt-4 px-4 max-w-4xl">
+      <button class="category-btn">Movies</button>
+      <button class="category-btn">Anime</button>
+      <button class="category-btn">Cartoons</button>
+      <button class="category-btn">Shows</button>
+      <button class="category-btn">English</button>
+      <button class="category-btn">Telugu</button>
+      <button class="category-btn">Hindi</button>
+      <button class="category-btn">Latest</button>
+    </nav>
+  </header>
+
+  <!-- Main Content Grid -->
+  <main class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 px-6 pb-16 max-w-7xl mx-auto">
+    <!-- Example Movie Card -->
+    <article class="glass item parallax" tabindex="0" aria-label="Movie: Cyberpunk 2077 Trailer">
+      <img
+        src="https://cdn.pixabay.com/photo/2020/06/25/21/40/cyberpunk-5336728_1280.jpg"
+        alt="Cyberpunk 2077 Trailer Poster"
+        loading="lazy"
+        class="rounded-lg w-full h-64 object-cover mb-4 transition-transform duration-500 ease-in-out"
+      />
+      <h2 class="text-xl font-extrabold neon-text">Cyberpunk 2077</h2>
+      <p class="text-sm text-gray-300">Trailer & Highlights</p>
+      <button
+        class="category-btn mt-4 w-full"
+        aria-label="Watch Cyberpunk 2077 Trailer"
+      >
+        Watch Now
+      </button>
+    </article>
+
+    <!-- Repeat above card structure for multiple items -->
+    <!-- Add more cards here or dynamically generate -->
+
+  </main>
+
+  <!-- Telegram Join Button -->
+  <div class="fixed bottom-8 right-8">
+    <a
+      href="https://t.me/ToonixTV"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="telegram-btn"
+      aria-label="Join Toonix TV Telegram Channel"
+    >
+      Join Telegram
+    </a>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    © 2025 Toonix TV | All rights reserved | Crafted with VFX & CGI magic
+  </footer>
+
+  <script>
+    // Initialize tsParticles for ultra cool particle background
+    tsParticles.load("tsparticles", {
+      fpsLimit: 60,
+      background: {
+        color: "#000011"
+      },
+      particles: {
+        number: {
+          value: 80,
+          density: { enable: true, area: 1200 }
+        },
+        color: { value: ["#00ffff", "#ff00ff", "#ffffff"] },
+        shape: { type: "circle" },
+        opacity: {
+          value: 0.7,
+          random: true,
+          anim: { enable: true, speed: 1, opacity_min: 0.2, sync: false }
+        },
+        size: {
+          value: 3,
+          random: { enable: true, minimumValue: 1 },
+          anim: { enable: true, speed: 4, size_min: 0.5, sync: false }
+        },
+        move: {
+          enable: true,
+          speed: 1.5,
+          direction: "none",
+          random: true,
+          straight: false,
+          outMode: "out",
+          attract: { enable: false }
+        },
+        links: {
+          enable: true,
+          distance: 150,
+          color: "#0ff",
+          opacity: 0.25,
+          width: 1
+        }
+      },
+      interactivity: {
+        events: {
+          onHover: { enable: true, mode: "grab" },
+          onClick: { enable: true, mode: "push" },
+          resize: true
+        },
+        modes: {
+          grab: { distance: 170, links: { opacity: 0.7 } },
+          push: { quantity: 4 }
+        }
+      },
+      detectRetina: true
+    });
+
+    // Parallax effect for cards with mouse move
+    const parallaxElements = document.querySelectorAll(".parallax");
+    window.addEventListener("mousemove", (e) => {
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      const maxRotation = 15; // degrees max rotation
+
+      parallaxElements.forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        const elX = rect.left + rect.width / 2;
+        const elY = rect.top + rect.height / 2;
+
+        const deltaX = (e.clientX - elX) / centerX;
+        const deltaY = (e.clientY - elY) / centerY;
+
+        const rotateX = maxRotation * deltaY * -1;
+        const rotateY = maxRotation * deltaX;
+
+        el.style.transform = `translateZ(50px) scale(1.05) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      });
+    });
+
+    // Scroll fade in for content items
+    const items = document.querySelectorAll(".item");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+    items.forEach((item) => observer.observe(item));
+  </script>
+</body>
+</html>
