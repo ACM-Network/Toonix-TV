@@ -1,143 +1,113 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Toonix Multiverse</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet"/>
   <style>
     body {
       font-family: 'Orbitron', sans-serif;
-      background-color: black;
-      color: white;
-      overflow-x: hidden;
-    }#intro {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: black;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: fadeOut 4s 4s forwards;
-}
-
-.intro-logo {
-  font-size: 3rem;
-  color: #f00;
-  letter-spacing: 10px;
-  text-transform: uppercase;
-  animation: zoomIn 3s ease-in-out;
-}
-
-@keyframes fadeOut {
-  to {
-    opacity: 0;
-    visibility: hidden;
-  }
-}
-
-@keyframes zoomIn {
-  0% {
-    transform: scale(0);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-.glow-button {
-  background: linear-gradient(to right, #ff00cc, #3333ff);
-  padding: 0.75rem 2rem;
-  border-radius: 1rem;
-  font-weight: bold;
-  transition: 0.3s;
-  box-shadow: 0 0 10px #0ff, 0 0 20px #f0f;
-}
-
-.glow-button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 20px #0ff, 0 0 40px #f0f;
-}
-
-.glass {
-  backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-}
-
-.ai-assistant {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 10px 20px;
-  border-radius: 20px;
-  backdrop-filter: blur(10px);
-  color: cyan;
-  font-family: monospace;
-  font-size: 14px;
-  animation: pulse 2s infinite;
-  box-shadow: 0 0 20px cyan;
-}
-
-@keyframes pulse {
-  0% { box-shadow: 0 0 5px cyan; }
-  50% { box-shadow: 0 0 20px cyan; }
-  100% { box-shadow: 0 0 5px cyan; }
-}
-
+      margin: 0;
+      background: #000;
+      color: #fff;
+    }
+    header { padding: 2rem; text-align: center; }
+    .logo { width: 100px; border-radius: 9999px; }
+    section { padding: 1rem; }
+    .grid { display: grid; gap: 1rem; }
+    @media(min-width: 640px) { .grid-cols-2 { grid-template-columns: repeat(2,1fr); } }
+    @media(min-width: 1024px) { .grid-cols-4 { grid-template-columns: repeat(4,1fr); } }
+    .card { background: rgba(255,255,255,0.05); border-radius: 1rem; padding: 1rem; }
+    .card h3 { margin-top: 0; }
+    iframe { width:100%; height:200px; border-radius: .5rem; }
   </style>
 </head>
-<body>  <!-- Marvel-Style Intro -->  <div id="intro">
-    <div class="intro-logo">TOONIX MULTIVERSE</div>
-  </div>  <!-- Header -->  <header class="text-center p-6 bg-black">
-    <img src="https://cdn5.cdn-telegram.org/file/pftpARIH3rlNmSXjwODWJ64OjWO9gDGtpK2ivS3QbHIBhWsXITN05ZTMFeo7-81HA65WnMwigigUOdIXKSqQHvazIpvl-PX5z3mNtn68M9dybjH3fFBzVMTtwB4NLDh2Nxg9wt2zvPCk0LQbaUwOCc6RllJbeIwXOKBvepuMzU-zok2WHdP7UnIyJ_1tjskTZ8Zno1RfxetABHO_eXQXpdAtUZSuhlZWg5dsl38caBkPbCjmLp9SLsJzr4KPabmI5TzOQX0ft6N96SiPnGv9olzSq1AOOGjaH98xtM_NMrq-G0WoTWzdIR3Es2XZ_78_03e64aKD5T9ajLhwmAY5pg.jpg"
-         class="h-24 w-24 mx-auto rounded-full border-4 border-purple-500"/>
-    <h1 class="text-4xl mt-4 font-bold">Toonix Multiverse Portal</h1>
-    <p class="text-gray-400 text-sm">Enter a universe of anime, cartoons, live TV, and more!</p>
-  </header>  <!-- Categories -->  <section class="p-4 text-center">
-    <h2 class="text-2xl font-bold">Multiverse Portals</h2>
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-      <div class="glass p-4 rounded-xl cursor-pointer hover:scale-105 transition" onclick="alert('Coming soon: Anime')">
-        <h3 class="text-xl text-pink-400 font-bold">Anime</h3>
-        <p class="text-sm text-gray-300">Explore the best Japanese anime</p>
+<body>
+
+  <!-- Header -->
+  <header>
+    <img class="logo" src="https://cdn5.cdn-telegram.org/file/pftpARIH3rlNmSXjwODWJ64OjWO9gDGtpK2ivS3QbHIBhWsXITN05ZTMFeo7-81HA65WnMwigigUOdIXKSqQHvazIpvl-PX5z3mNtn68M9dybjH3fFBzVMTtwB4NLDh2Nxg9wt2vPCk0LQbaUwOCc6RllJbeIwXOKBvepuMzU-zok2WHdP7UnIyJ_1tjskTZ8Zno1RfxetABHO_eXQXpdAtUZSuhlZWg5dsl38caBkPbCjmLp9SLsJzr4KPabmI5TzOQX0ft6N96SiPnGv9olzSq1AOOGjaH98xtM_NMrq-G0WoTWzdIR3Es2XZ_78_03e64aKD5T9ajLhwmAY5pg.jpg" alt="Toonix Logo"/>
+    <h1 class="text-3xl font-bold">Toonix Multiverse – Live & Classic</h1>
+  </header>
+
+  <!-- Live TV -->
+  <section>
+    <h2 class="text-2xl font-bold mb-4">🎥 Live TV Channels</h2>
+    <div class="grid grid-cols-2 lg:grid-cols-4">
+      <div class="card">
+        <h3>CBC News (Canada)</h3>
+        <p>Free Canadian news stream</p>
+        <button onclick="play('https://livecbcdai-i.akamaihd.net/hls/live/567245/event2/CBCNN/master6.m3u8');">Play</button>
       </div>
-      <div class="glass p-4 rounded-xl cursor-pointer hover:scale-105 transition" onclick="alert('Coming soon: Cartoons')">
-        <h3 class="text-xl text-yellow-400 font-bold">Cartoons</h3>
-        <p class="text-sm text-gray-300">Classic and modern cartoons</p>
+      <div class="card">
+        <h3>NHK World (Japan)</h3>
+        <p>1080p global news</p>
+        <button onclick="play('https://nhkwlive-ojp.akamaized.net/hls/live/2003459/nhkwlive-ojp-en/index.m3u8');">Play</button>
       </div>
-      <div class="glass p-4 rounded-xl cursor-pointer hover:scale-105 transition" onclick="alert('Coming soon: Live TV')">
-        <h3 class="text-xl text-green-400 font-bold">Live TV</h3>
-        <p class="text-sm text-gray-300">Watch live TV channels</p>
+      <div class="card">
+        <h3>DD Tripura (India)</h3>
+        <p>Regional India channel</p>
+        <button onclick="play('https://d3qs3d2rkhfqrt.cloudfront.net/out/v1/52b998e9510d41c29ad2ceca8ea3d849/index_3.m3u8');">Play</button>
       </div>
-      <div class="glass p-4 rounded-xl cursor-pointer hover:scale-105 transition" onclick="alert('Coming soon: Series')">
-        <h3 class="text-xl text-blue-400 font-bold">Series</h3>
-        <p class="text-sm text-gray-300">Popular TV shows & web series</p>
+      <div class="card">
+        <h3>Global TV (Canada)</h3>
+        <p>News & entertainment</p>
+        <button onclick="play('https://glblvstudents-lh.akamaihd.net/hls/live/12345/global/master.m3u8');">Play</button>
       </div>
     </div>
-  </section>  <!-- Telegram CTA -->  <section class="text-center mt-10">
-    <a href="https://t.me/Toonix_TV" target="_blank" class="glow-button inline-block">Join us on Telegram</a>
-  </section>  <!-- AI Assistant -->  <div class="ai-assistant" id="jarvis">
-    <span id="jarvisText">Hello, I am JARVIS. How can I help you?</span>
-  </div>  <script>
-    // AI message updates (simulate)
-    const messages = [
-      "Scanning multiverse portals...",
-      "Initializing M3U playlist engine...",
-      "Ready to assist you, commander!",
-      "New updates available. Want to explore?"
-    ];
+  </section>
 
-    let index = 0;
-    setInterval(() => {
-      document.getElementById("jarvisText").innerText = messages[index % messages.length];
-      index++;
-    }, 5000);
-  </script>  <footer class="text-center text-gray-500 mt-10 p-4 text-sm">
-    &copy; 2025 Toonix Multiverse. Powered by imagination.
-  </footer></body>
+  <!-- Classic Public-Domain Films -->
+  <section>
+    <h2 class="text-2xl font-bold mb-4">🎬 Public-Domain Classics</h2>
+    <div class="grid grid-cols-2 lg:grid-cols-4">
+      <div class="card">
+        <h3>The General (1926)</h3>
+        <iframe src="https://archive.org/embed/TheGeneral1926" allowfullscreen></iframe>
+      </div>
+      <div class="card">
+        <h3>Carnival of Souls (1962)</h3>
+        <iframe src="https://archive.org/embed/carnivalofsouls" allowfullscreen></iframe>
+      </div>
+      <div class="card">
+        <h3>Steamboat Willie (1928)</h3>
+        <iframe src="https://archive.org/embed/steamboatwillie" allowfullscreen></iframe>
+      </div>
+      <div class="card">
+        <h3>Undercover (1943)</h3>
+        <iframe src="https://archive.org/embed/undercovertraining" allowfullscreen></iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer / Telegram -->
+  <footer class="text-center p-4">
+    <a href="https://t.me/Toonix_TV" target="_blank" class="text-blue-400">Join our Telegram channel</a>
+    <p class="text-gray-500 mt-2">© 2025 Toonix Multiverse</p>
+  </footer>
+
+  <!-- Video Player Modal (hidden until play clicked) -->
+  <div id="modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); justify-content:center;align-items:center;">
+    <div style="position:relative; width:90%; max-width:600px;">
+      <button onclick="closeModal()" style="position:absolute; top:10px; right:10px; z-index:2;">✖</button>
+      <video id="livePlayer" controls autoplay style="width:100%; border-radius:8px; background:black;"></video>
+    </div>
+  </div>
+
+  <script>
+    function play(src) {
+      const modal = document.getElementById('modal');
+      const player = document.getElementById('livePlayer');
+      player.src = src;
+      modal.style.display = 'flex';
+    }
+    function closeModal() {
+      const modal = document.getElementById('modal');
+      document.getElementById('livePlayer').src = '';
+      modal.style.display = 'none';
+    }
+  </script>
+
+</body>
 </html>
