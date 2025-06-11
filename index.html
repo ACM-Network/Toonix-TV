@@ -3,87 +3,89 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Toonix TV - M3U Playlist Player</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+  <title>Toonix TV Player</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- HLS.js -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
   <style>
     body {
-      background-color: #000;
+      background: radial-gradient(circle at center, #000011 0%, #0a001a 100%);
       color: white;
-      font-family: 'Arial', sans-serif;
+      font-family: 'Segoe UI', sans-serif;
+      overflow-x: hidden;
     }
-    .glass {
-      backdrop-filter: blur(20px);
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    .neon {
+      text-shadow: 0 0 5px #fff, 0 0 15px #0ff, 0 0 30px #f0f;
     }
     video {
       width: 100%;
-      max-height: 300px;
-      background: #111;
+      max-height: 60vh;
+      border-radius: 1rem;
+      outline: none;
+    }
+    input {
+      color: black;
     }
   </style>
 </head>
-<body class="p-4">
+<body class="text-center p-4">
 
-  <h1 class="text-2xl font-bold text-center mb-4">📺 Toonix TV - M3U Playlist Player</h1>
+  <!-- Header -->
+  <h1 class="text-3xl md:text-5xl font-bold neon mb-6">🎬 Toonix TV Player</h1>
 
-  <!-- M3U Link Input -->
-  <div class="mb-4 text-center">
-    <input id="m3uLink" type="text" placeholder="Paste your .m3u playlist URL" class="w-full p-2 text-black rounded-md" value="https://iptv-org.github.io/iptv/languages/tel.m3u"/>
-    <button onclick="loadPlaylist()" class="mt-2 px-4 py-2 bg-purple-600 rounded-md">Load Channels</button>
+  <!-- URL Input -->
+  <div id="inputBox" class="mb-6">
+    <input id="m3u8Link" type="text" placeholder="Enter your M3U8 link..." 
+           class="w-11/12 md:w-1/2 p-3 rounded-xl text-black" />
+    <button onclick="loadVideo()" 
+            class="ml-2 px-4 py-3 bg-purple-600 hover:bg-purple-800 text-white rounded-xl">Load</button>
   </div>
-
-  <!-- Channel List -->
-  <div id="channelList" class="mb-4 space-y-2"></div>
 
   <!-- Video Player -->
-  <div class="glass p-2 rounded-md">
-    <video id="video" controls></video>
+  <div id="playerBox" class="hidden">
+    <video id="video" controls autoplay></video>
   </div>
 
-  <!-- Script to Parse and Play M3U -->
+  <!-- Script -->
   <script>
-    async function loadPlaylist() {
-      const url = document.getElementById("m3uLink").value;
-      const response = await fetch(url);
-      const text = await response.text();
-      const lines = text.split('\n');
-      const listContainer = document.getElementById("channelList");
-      listContainer.innerHTML = '';
-
-      for (let i = 0; i < lines.length; i++) {
-        if (lines[i].startsWith('#EXTINF')) {
-          const name = lines[i].split(',').pop().trim();
-          const stream = lines[i + 1]?.trim();
-          if (stream && stream.startsWith('http')) {
-            const btn = document.createElement("button");
-            btn.innerText = name;
-            btn.className = "block w-full text-left p-2 bg-gray-800 hover:bg-gray-700 rounded-md";
-            btn.onclick = () => playStream(stream);
-            listContainer.appendChild(btn);
-          }
-        }
-      }
-    }
-
-    function playStream(url) {
+    function loadVideo() {
+      const link = document.getElementById("m3u8Link").value.trim();
       const video = document.getElementById("video");
+      const playerBox = document.getElementById("playerBox");
+
+      if (!link) {
+        alert("Please enter a valid M3U8 link!");
+        return;
+      }
+
       if (Hls.isSupported()) {
-        const hls = new Hls();
-        hls.loadSource(url);
+        const hls = new Hls({
+          enableWebVTT: true,
+          debug: false,
+        });
+
+        hls.loadSource(link);
         hls.attachMedia(video);
+
         hls.on(Hls.Events.MANIFEST_PARSED, function () {
-          video.play();
+          playerBox.classList.remove("hidden");
+        });
+
+        hls.on(Hls.Events.AUDIO_TRACKS_UPDATED, (event, data) => {
+          console.log("Audio tracks:", data.audioTracks);
         });
       } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = url;
-        video.play();
+        video.src = link;
+        playerBox.classList.remove("hidden");
       } else {
-        alert("Your browser does not support HLS playback.");
+        alert("Your browser does not support M3U8 playback.");
       }
     }
   </script>
+
 </body>
 </html>
