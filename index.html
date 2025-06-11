@@ -3,89 +3,130 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Toonix TV Player</title>
-
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- HLS.js -->
+  <title>Toonix TV - Live Player</title>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
   <style>
     body {
-      background: radial-gradient(circle at center, #000011 0%, #0a001a 100%);
+      font-family: sans-serif;
+      background: #000;
       color: white;
-      font-family: 'Segoe UI', sans-serif;
-      overflow-x: hidden;
-    }
-    .neon {
-      text-shadow: 0 0 5px #fff, 0 0 15px #0ff, 0 0 30px #f0f;
     }
     video {
       width: 100%;
-      max-height: 60vh;
-      border-radius: 1rem;
-      outline: none;
+      max-height: 70vh;
+      background: black;
     }
-    input {
-      color: black;
+    .channel-thumb {
+      width: 50px;
+      height: 50px;
+      object-fit: contain;
+      margin-right: 10px;
     }
   </style>
 </head>
-<body class="text-center p-4">
+<body class="text-center p-4 space-y-6">
+  <h1 class="text-3xl font-bold text-pink-500">🎬 Toonix TV Player</h1>
 
-  <!-- Header -->
-  <h1 class="text-3xl md:text-5xl font-bold neon mb-6">🎬 Toonix TV Player</h1>
-
-  <!-- URL Input -->
-  <div id="inputBox" class="mb-6">
-    <input id="m3u8Link" type="text" placeholder="Enter your M3U8 link..." 
-           class="w-11/12 md:w-1/2 p-3 rounded-xl text-black" />
-    <button onclick="loadVideo()" 
-            class="ml-2 px-4 py-3 bg-purple-600 hover:bg-purple-800 text-white rounded-xl">Load</button>
+  <!-- Input Form -->
+  <div class="space-y-4">
+    <input type="url" id="m3u8url" placeholder="Paste M3U8 or M3U playlist URL" class="p-2 w-full text-black rounded" />
+    <input type="file" id="fileInput" accept=".m3u,.m3u8" class="text-sm"/>
+    <button onclick="loadInput()" class="bg-purple-600 hover:bg-purple-800 px-4 py-2 rounded">Load</button>
   </div>
 
   <!-- Video Player -->
-  <div id="playerBox" class="hidden">
+  <div id="playerContainer" class="hidden">
     <video id="video" controls autoplay></video>
   </div>
 
-  <!-- Script -->
-  <script>
-    function loadVideo() {
-      const link = document.getElementById("m3u8Link").value.trim();
-      const video = document.getElementById("video");
-      const playerBox = document.getElementById("playerBox");
+  <!-- Playlist Container -->
+  <div id="playlistContainer" class="space-y-2 mt-6"></div>
 
-      if (!link) {
-        alert("Please enter a valid M3U8 link!");
-        return;
+  <script>
+    let video = document.getElementById('video');
+    let hls = null;
+
+    function playStream(url) {
+      document.getElementById('playerContainer').classList.remove('hidden');
+
+      if (hls) {
+        hls.destroy();
+        hls = null;
       }
 
       if (Hls.isSupported()) {
-        const hls = new Hls({
-          enableWebVTT: true,
-          debug: false,
-        });
-
-        hls.loadSource(link);
+        hls = new Hls({ enableWebVTT: true });
+        hls.loadSource(url);
         hls.attachMedia(video);
-
         hls.on(Hls.Events.MANIFEST_PARSED, function () {
-          playerBox.classList.remove("hidden");
+          video.play();
         });
-
-        hls.on(Hls.Events.AUDIO_TRACKS_UPDATED, (event, data) => {
-          console.log("Audio tracks:", data.audioTracks);
+        hls.on(Hls.Events.AUDIO_TRACKS_UPDATED, function (event, data) {
+          console.log('Audio tracks:', data.audioTracks);
         });
       } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = link;
-        playerBox.classList.remove("hidden");
-      } else {
-        alert("Your browser does not support M3U8 playback.");
+        video.src = url;
+        video.play();
       }
     }
-  </script>
 
+    function loadInput() {
+      const url = document.getElementById('m3u8url').value;
+      const file = document.getElementById('fileInput').files[0];
+
+      if (url.endsWith(".m3u") || url.endsWith(".m3u8")) {
+        fetch(url)
+          .then(res => res.text())
+          .then(parseM3U)
+          .catch(() => alert("Invalid URL or Playlist"));
+      } else if (file) {
+        const reader = new FileReader();
+        reader.onload = e => parseM3U(e.target.result);
+        reader.readAsText(file);
+      } else if (url.endsWith(".m3u8")) {
+        playStream(url);
+      } else {
+        alert("Please provide a valid .m3u/.m3u8 file or URL");
+      }
+    }
+
+    function parseM3U(text) {
+      const lines = text.split('\n');
+      const playlist = [];
+      let current = {};
+
+      lines.forEach(line => {
+        if (line.startsWith('#EXTINF')) {
+          const nameMatch = line.match(/,(.*)/);
+          const logoMatch = line.match(/tvg-logo="([^"]+)"/);
+          current = {
+            name: nameMatch ? nameMatch[1] : 'Unknown',
+            logo: logoMatch ? logoMatch[1] : '',
+          };
+        } else if (line.startsWith('http')) {
+          current.url = line.trim();
+          playlist.push({...current});
+        }
+      });
+
+      displayPlaylist(playlist);
+    }
+
+    function displayPlaylist(playlist) {
+      const container = document.getElementById('playlistContainer');
+      container.innerHTML = '';
+      playlist.forEach(item => {
+        const div = document.createElement('div');
+        div.className = "flex items-center p-2 bg-gray-800 rounded cursor-pointer hover:bg-gray-700";
+        div.onclick = () => playStream(item.url);
+        div.innerHTML = `
+          ${item.logo ? `<img src="${item.logo}" class="channel-thumb"/>` : ''}
+          <span class="text-left">${item.name}</span>
+        `;
+        container.appendChild(div);
+      });
+    }
+  </script>
 </body>
 </html>
