@@ -3,119 +3,157 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Toonix TV - M3U Playlist Player</title>
+  <title>Toonix TV - Stream Player</title>
+
+  <!-- Tailwind CSS -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet"/>
+
+  <!-- Video.js Player -->
+  <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
+  <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
+
   <style>
     body {
-      font-family: sans-serif;
-      background: #000;
+      font-family: 'Orbitron', sans-serif;
+      background: radial-gradient(circle at center, #000011 0%, #0a001a 100%);
       color: white;
-      margin: 0;
-      padding: 0;
       overflow-x: hidden;
     }
 
-    .container {
-      max-width: 100%;
-      padding: 1rem;
+    .neon-text {
+      text-shadow: 0 0 10px #fff, 0 0 20px #f0f, 0 0 30px #0ff;
     }
 
-    video {
-      width: 100%;
-      height: auto;
-      border-radius: 1rem;
+    .intro {
+      position: fixed;
+      inset: 0;
+      background: black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeOut 3s 3s forwards;
+      z-index: 50;
     }
 
-    input, button {
-      color: black;
+    @keyframes fadeOut {
+      to { opacity: 0; visibility: hidden; }
     }
 
-    .channel-thumb {
-      width: 50px;
-      height: 50px;
-      object-fit: contain;
+    .zoom-in {
+      animation: zoomIn 2s ease-out;
     }
 
-    .channel-item:hover {
-      background-color: #222;
+    @keyframes zoomIn {
+      from { transform: scale(0); }
+      to { transform: scale(1); }
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
     }
   </style>
 </head>
 <body>
-  <div class="container mx-auto text-center">
-    <h1 class="text-3xl font-bold mb-4">🎬 Toonix TV - Playlist Player</h1>
-    
-    <!-- Link Input Section -->
-    <div id="linkInputBox" class="mb-4">
-      <input type="text" id="m3uInput" placeholder="Paste M3U/M3U8 link..." class="p-2 rounded w-4/5 md:w-1/2" />
-      <button onclick="loadPlaylist()" class="bg-purple-600 text-white px-4 py-2 rounded ml-2">Load</button>
-    </div>
 
-    <!-- Channel List -->
-    <div id="channelList" class="text-left max-h-[300px] overflow-y-auto hidden mt-4 mb-6"></div>
-
-    <!-- Video Player -->
-    <div id="playerBox" class="hidden">
-      <video id="videoPlayer" controls crossorigin="anonymous"></video>
-    </div>
+  <!-- Intro Animation -->
+  <div class="intro">
+    <h1 class="text-4xl neon-text zoom-in">🚀 Welcome to Toonix TV</h1>
   </div>
 
+  <!-- Input Section -->
+  <div class="min-h-screen flex flex-col items-center justify-center text-center p-4">
+    <h2 class="text-3xl font-bold neon-text mb-4">Enter M3U/M3U8 Link or Upload File</h2>
+    
+    <input id="m3uLink" type="text" placeholder="Paste M3U/M3U8 link" class="p-2 rounded w-11/12 md:w-1/2 text-black mb-3" />
+    
+    <p class="my-2">OR</p>
+    
+    <input type="file" id="fileInput" accept=".m3u,.m3u8" class="mb-4"/>
+    
+    <button onclick="loadPlaylist()" class="bg-purple-700 px-6 py-2 rounded text-white font-bold neon-text">Load Playlist</button>
+  </div>
+
+  <!-- Video Player Section -->
+  <div id="playerContainer" class="hidden p-4">
+    <video id="videoPlayer" class="video-js vjs-default-skin vjs-big-play-centered w-full max-w-screen-lg mx-auto" controls preload="auto"></video>
+  </div>
+
+  <!-- Playlist Thumbnails -->
+  <div id="playlistGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 p-4"></div>
+
   <script>
-    async function loadPlaylist() {
-      const url = document.getElementById('m3uInput').value.trim();
-      if (!url.endsWith('.m3u') && !url.endsWith('.m3u8')) {
-        alert('Please enter a valid M3U or M3U8 playlist URL');
-        return;
+    async function parseM3U(content) {
+      const lines = content.split('\n');
+      const entries = [];
+      let current = {};
+
+      for (let line of lines) {
+        line = line.trim();
+        if (line.startsWith('#EXTINF')) {
+          const titleMatch = line.match(/,(.*)/);
+          current.title = titleMatch ? titleMatch[1] : 'Untitled';
+          const tvgMatch = line.match(/tvg-logo="([^"]+)"/);
+          current.thumb = tvgMatch ? tvgMatch[1] : '';
+        } else if (line && !line.startsWith('#')) {
+          current.url = line;
+          entries.push({ ...current });
+          current = {};
+        }
       }
+      return entries;
+    }
 
-      try {
-        const res = await fetch(url);
-        const text = await res.text();
-        const lines = text.split('\n');
-        const channels = [];
-        let current = {};
+    function showPlayer(videoUrl) {
+      const playerSection = document.getElementById('playerContainer');
+      playerSection.classList.remove('hidden');
+      
+      const player = videojs('videoPlayer');
+      player.src({ src: videoUrl, type: 'application/x-mpegURL' });
+      player.play();
+    }
 
-        lines.forEach(line => {
-          if (line.startsWith('#EXTINF')) {
-            const match = line.match(/tvg-logo="(.*?)".*,(.*)/);
-            current = {
-              logo: match ? match[1] : '',
-              name: match ? match[2] : 'Unnamed Channel',
-              url: ''
-            };
-          } else if (line.startsWith('http')) {
-            current.url = line.trim();
-            channels.push({ ...current });
-          }
-        });
+    function loadPlaylist() {
+      const link = document.getElementById('m3uLink').value;
+      const file = document.getElementById('fileInput').files[0];
 
-        const listDiv = document.getElementById('channelList');
-        listDiv.innerHTML = '';
-        channels.forEach(ch => {
-          const item = document.createElement('div');
-          item.className = 'channel-item flex items-center p-2 cursor-pointer border-b border-gray-700';
-          item.onclick = () => playChannel(ch.url);
-
-          item.innerHTML = `
-            <img src="${ch.logo}" class="channel-thumb mr-3" onerror="this.src='https://via.placeholder.com/50?text=TV'" />
-            <span>${ch.name}</span>
-          `;
-          listDiv.appendChild(item);
-        });
-
-        listDiv.classList.remove('hidden');
-        document.getElementById('playerBox').classList.remove('hidden');
-      } catch (e) {
-        alert('Error loading playlist.');
-        console.error(e);
+      if (link) {
+        fetch(link)
+          .then(res => res.text())
+          .then(parseM3U)
+          .then(displayThumbnails)
+          .catch(() => alert('Error loading playlist'));
+      } else if (file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          parseM3U(e.target.result).then(displayThumbnails);
+        };
+        reader.readAsText(file);
+      } else {
+        alert('Please enter a link or upload a file!');
       }
     }
 
-    function playChannel(url) {
-      const player = document.getElementById('videoPlayer');
-      player.src = url;
-      player.load();
-      player.play();
+    function displayThumbnails(channels) {
+      const grid = document.getElementById('playlistGrid');
+      grid.innerHTML = '';
+
+      channels.forEach(channel => {
+        const card = document.createElement('div');
+        card.className = 'glass p-4 rounded cursor-pointer transition hover:scale-105 text-center';
+        card.onclick = () => showPlayer(channel.url);
+
+        card.innerHTML = `
+          <img src="${channel.thumb || 'https://via.placeholder.com/150'}" class="rounded mb-2 w-full h-32 object-cover" />
+          <h3 class="text-lg font-bold">${channel.title}</h3>
+        `;
+        grid.appendChild(card);
+      });
     }
   </script>
 </body>
