@@ -19,16 +19,20 @@
 
     #input-area {
       padding: 20px;
+      width: 100%;
+      max-width: 600px;
+      box-sizing: border-box;
       text-align: center;
     }
 
     input[type="text"], input[type="file"] {
       padding: 10px;
-      margin: 10px;
-      width: 90%;
-      max-width: 500px;
+      margin: 10px 0;
+      width: 100%;
+      max-width: 100%;
       border-radius: 8px;
       border: none;
+      box-sizing: border-box;
     }
 
     button {
@@ -42,13 +46,22 @@
 
     .video-container {
       width: 100%;
-      max-width: 800px;
-      margin-top: 20px;
+      max-width: 100%;
+      padding: 0 10px;
+      box-sizing: border-box;
+      display: none;
     }
 
-    video {
-      width: 100%;
-      height: auto;
+    .video-js {
+      width: 100% !important;
+      height: auto !important;
+      max-height: 60vh;
+    }
+
+    @media screen and (max-width: 600px) {
+      .video-js {
+        max-height: 50vh;
+      }
     }
   </style>
 </head>
@@ -63,7 +76,7 @@
     <button onclick="loadVideo()">Load Video</button>
   </div>
 
-  <div class="video-container" style="display:none;" id="playerContainer">
+  <div class="video-container" id="playerContainer">
     <video
       id="myPlayer"
       class="video-js vjs-default-skin"
@@ -82,15 +95,12 @@
       const fileInput = document.getElementById("videoFile");
       const playerContainer = document.getElementById("playerContainer");
 
-      // Show the video player container
       playerContainer.style.display = "block";
 
-      // Destroy previous player if any
       if (player) {
         player.dispose();
       }
 
-      // Re-create the player
       player = videojs("myPlayer", {
         controls: true,
         autoplay: false,
@@ -102,7 +112,6 @@
         const file = fileInput.files[0];
         const fileURL = URL.createObjectURL(file);
         const type = file.type;
-
         player.src({ src: fileURL, type });
       } else if (url) {
         let type = "application/x-mpegURL";
