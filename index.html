@@ -3,103 +3,106 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Toonix TV</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
-  <link href="https://vjs.zencdn.net/8.10.0/video-js.min.css" rel="stylesheet"/>
-  <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <title>Toonix Player</title>
+  <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
   <style>
     body {
-      font-family: sans-serif;
       background: #000;
+      margin: 0;
+      padding: 0;
       color: white;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    #videoWrapper {
-      display: none;
+
+    #input-area {
+      padding: 20px;
+      text-align: center;
     }
-    .channel-thumb {
-      width: 40px;
-      height: 40px;
-      object-fit: cover;
-      border-radius: 9999px;
+
+    input[type="text"], input[type="file"] {
+      padding: 10px;
+      margin: 10px;
+      width: 90%;
+      max-width: 500px;
+      border-radius: 8px;
+      border: none;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #e100ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .video-container {
+      width: 100%;
+      max-width: 800px;
+      margin-top: 20px;
+    }
+
+    video {
+      width: 100%;
+      height: auto;
     }
   </style>
 </head>
-<body class="p-4 space-y-6">
-  <div class="text-center">
-    <img src="https://cdn5.cdn-telegram.org/file/pftpARIH3rlNmSXjwODWJ64OjWO9gDGtpK2ivS3QbHIBhWsXITN05ZTMFeo7-81HA65WnMwigigUOdIXKSqQHvazIpvl-PX5z3mNtn68M9dybjH3fFBzVMTtwB4NLDh2Nxg9wt2zvPCk0LQbaUwOCc6RllJbeIwXOKBvepuMzU-zok2WHdP7UnIyJ_1tjskTZ8Zno1RfxetABHO_eXQXpdAtUZSuhlZWg5dsl38caBkPbCjmLp9SLsJzr4KPabmI5TzOQX0ft6N96SiPnGv9olzSq1AOOGjaH98xtM_NMrq-G0WoTWzdIR3Es2XZ_78_03e64aKD5T9ajLhwmAY5pg.jpg" class="mx-auto rounded-full h-16"/>
-    <h1 class="text-2xl mt-2 font-bold">Toonix TV</h1>
+<body>
+
+  <div id="input-area">
+    <h2>🎬 Enter M3U8 / MP4 / WebM Link or Upload a File</h2>
+    <input type="text" id="videoURL" placeholder="Enter video URL here (e.g., https://...)"/>
+    <br>
+    <input type="file" id="videoFile" accept="video/*"/>
+    <br>
+    <button onclick="loadVideo()">Load Video</button>
   </div>
 
-  <div class="space-y-4">
-    <input id="urlInput" type="text" placeholder="Paste M3U/M3U8 URL" class="w-full p-2 rounded text-black" />
-    <input id="fileInput" type="file" class="w-full p-2 bg-gray-800 rounded text-white"/>
-    <button onclick="loadPlaylist()" class="w-full bg-blue-600 py-2 rounded font-semibold">Load Playlist</button>
-  </div>
-
-  <div id="channelList" class="space-y-2"></div>
-
-  <div id="videoWrapper">
-    <video id="videoPlayer" class="video-js vjs-default-skin mt-4" controls preload="auto" width="100%" height="300">
+  <div class="video-container" style="display:none;" id="playerContainer">
+    <video
+      id="myPlayer"
+      class="video-js vjs-default-skin"
+      controls
+      preload="auto"
+      data-setup='{"fluid": true, "techOrder": ["html5"]}'
+    >
       <source src="" type="application/x-mpegURL" />
     </video>
   </div>
 
+  <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script>
-    const player = videojs('videoPlayer');
-    const urlInput = document.getElementById('urlInput');
-    const fileInput = document.getElementById('fileInput');
-    const channelList = document.getElementById('channelList');
-    const videoWrapper = document.getElementById('videoWrapper');
+    function loadVideo() {
+      const url = document.getElementById("videoURL").value;
+      const fileInput = document.getElementById("videoFile");
+      const videoElement = document.getElementById("myPlayer_html5_api");
+      const playerContainer = document.getElementById("playerContainer");
+      const player = videojs('myPlayer');
 
-    function loadPlaylist() {
-      const url = urlInput.value.trim();
-      const file = fileInput.files[0];
+      playerContainer.style.display = "block";
 
-      if (url) {
-        fetch(url).then(res => res.text()).then(parseM3U);
-      } else if (file) {
-        const reader = new FileReader();
-        reader.onload = e => parseM3U(e.target.result);
-        reader.readAsText(file);
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const fileURL = URL.createObjectURL(file);
+        player.src({ type: file.type, src: fileURL });
+      } else if (url) {
+        let type = "application/x-mpegURL";
+        if (url.endsWith(".mp4")) type = "video/mp4";
+        else if (url.endsWith(".webm")) type = "video/webm";
+        player.src({ type, src: url });
+      } else {
+        alert("Please enter a valid URL or upload a file.");
       }
-    }
 
-    function parseM3U(data) {
-      const lines = data.split('\n');
-      let currentName = '', currentLogo = '';
-
-      channelList.innerHTML = '';
-
-      for (let i = 0; i < lines.length; i++) {
-        if (lines[i].startsWith('#EXTINF')) {
-          const nameMatch = lines[i].match(/tvg-name="(.*?)"/) || lines[i].match(/,(.*)$/);
-          const logoMatch = lines[i].match(/tvg-logo="(.*?)"/);
-          currentName = nameMatch ? nameMatch[1] : 'Unknown Channel';
-          currentLogo = logoMatch ? logoMatch[1] : '';
-        } else if (lines[i].startsWith('http')) {
-          const streamURL = lines[i].trim();
-          const btn = document.createElement('button');
-          btn.className = 'flex items-center space-x-3 w-full p-2 bg-gray-800 hover:bg-gray-700 rounded';
-          btn.innerHTML = `
-            ${currentLogo ? `<img src="${currentLogo}" class="channel-thumb" />` : ''}
-            <span class="truncate">${currentName}</span>
-          `;
-          btn.onclick = () => {
-            player.src({ src: streamURL, type: 'application/x-mpegURL' });
-            player.play();
-            videoWrapper.style.display = 'block';
-            scrollToPlayer();
-          };
-          channelList.appendChild(btn);
-        }
-      }
-    }
-
-    function scrollToPlayer() {
-      setTimeout(() => {
-        videoWrapper.scrollIntoView({ behavior: 'smooth' });
-      }, 300);
+      player.ready(() => {
+        player.play();
+      });
     }
   </script>
 </body>
