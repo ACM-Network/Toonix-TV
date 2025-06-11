@@ -69,33 +69,46 @@
       class="video-js vjs-default-skin"
       controls
       preload="auto"
-      data-setup='{"fluid": true, "techOrder": ["html5"]}'
-    >
-      <source src="" type="application/x-mpegURL" />
-    </video>
+      data-setup='{}'
+    ></video>
   </div>
 
   <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script>
+    let player = null;
+
     function loadVideo() {
       const url = document.getElementById("videoURL").value;
       const fileInput = document.getElementById("videoFile");
-      const videoElement = document.getElementById("myPlayer_html5_api");
       const playerContainer = document.getElementById("playerContainer");
-      const player = videojs('myPlayer');
 
+      // Show the video player container
       playerContainer.style.display = "block";
+
+      // Destroy previous player if any
+      if (player) {
+        player.dispose();
+      }
+
+      // Re-create the player
+      player = videojs("myPlayer", {
+        controls: true,
+        autoplay: false,
+        preload: "auto",
+        fluid: true,
+      });
 
       if (fileInput.files.length > 0) {
         const file = fileInput.files[0];
         const fileURL = URL.createObjectURL(file);
-        player.src({ type: file.type, src: fileURL });
+        const type = file.type;
+
+        player.src({ src: fileURL, type });
       } else if (url) {
         let type = "application/x-mpegURL";
         if (url.endsWith(".mp4")) type = "video/mp4";
         else if (url.endsWith(".webm")) type = "video/webm";
-        player.src({ type, src: url });
+        player.src({ src: url, type });
       } else {
         alert("Please enter a valid URL or upload a file.");
       }
