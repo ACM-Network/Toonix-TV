@@ -3,129 +3,139 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Toonix Player</title>
-  <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+  <title>Toonix Multiverse Portal</title>
+  
+  <!-- Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+
+  <!-- Animate.css -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet"/>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet"/>
+
+  <!-- tsParticles -->
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+
   <style>
     body {
-      background: #000;
+      font-family: 'Orbitron', sans-serif;
       margin: 0;
-      padding: 0;
+      background: radial-gradient(circle at center, #000011 0%, #0a001a 100%);
       color: white;
-      font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      overflow: hidden;
     }
 
-    #input-area {
-      padding: 20px;
-      width: 100%;
-      max-width: 600px;
-      box-sizing: border-box;
+    #intro {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: black;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      animation: fadeOut 3s 4s forwards;
+    }
+
+    .intro-logo {
+      font-size: 3rem;
+      text-align: center;
+      text-shadow: 0 0 10px #0ff, 0 0 20px #f0f;
+    }
+
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+
+    .portal {
+      display: none;
+      padding-top: 80px;
       text-align: center;
     }
 
-    input[type="text"], input[type="file"] {
-      padding: 10px;
-      margin: 10px 0;
-      width: 100%;
-      max-width: 100%;
-      border-radius: 8px;
-      border: none;
-      box-sizing: border-box;
+    .glow-button {
+      border: 2px solid #0ff;
+      padding: 1rem 2rem;
+      border-radius: 1rem;
+      background-color: rgba(0, 0, 0, 0.3);
+      text-shadow: 0 0 10px #0ff;
+      box-shadow: 0 0 20px #0ff;
+      transition: all 0.3s;
     }
 
-    button {
-      padding: 10px 20px;
-      background-color: #e100ff;
-      color: white;
-      border: none;
-      border-radius: 8px;
+    .glow-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px #f0f, 0 0 60px #0ff;
+    }
+
+    .category-card {
+      padding: 2rem;
+      margin: 1rem;
+      border-radius: 1.5rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 0 20px rgba(0,255,255,0.2);
       cursor: pointer;
+      transition: transform 0.3s;
     }
 
-    .video-container {
-      width: 100%;
-      max-width: 100%;
-      padding: 0 10px;
-      box-sizing: border-box;
-      display: none;
-    }
-
-    .video-js {
-      width: 100% !important;
-      height: auto !important;
-      max-height: 60vh;
-    }
-
-    @media screen and (max-width: 600px) {
-      .video-js {
-        max-height: 50vh;
-      }
+    .category-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 40px rgba(255,0,255,0.5);
     }
   </style>
 </head>
+
 <body>
 
-  <div id="input-area">
-    <h2>🎬 Enter M3U8 / MP4 / WebM Link or Upload a File</h2>
-    <input type="text" id="videoURL" placeholder="Enter video URL here (e.g., https://...)"/>
-    <br>
-    <input type="file" id="videoFile" accept="video/*"/>
-    <br>
-    <button onclick="loadVideo()">Load Video</button>
+  <!-- Particle Background -->
+  <div id="tsparticles" class="fixed inset-0 -z-10"></div>
+
+  <!-- Intro Animation -->
+  <div id="intro">
+    <div class="intro-logo animate__animated animate__zoomInDown">🚀 TOONIX MULTIVERSE</div>
+    <div class="mt-4 text-xl animate__animated animate__fadeIn animate__delay-2s">Initializing Portals...</div>
   </div>
 
-  <div class="video-container" id="playerContainer">
-    <video
-      id="myPlayer"
-      class="video-js vjs-default-skin"
-      controls
-      preload="auto"
-      data-setup='{}'
-    ></video>
+  <!-- Main Portal UI -->
+  <div id="portal" class="portal">
+    <h1 class="text-4xl mb-6">Choose Your Universe</h1>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 px-4">
+      <div class="category-card" onclick="openCategory('anime')">🌌 Anime</div>
+      <div class="category-card" onclick="openCategory('cartoons')">🌀 Cartoons</div>
+      <div class="category-card" onclick="openCategory('series')">📺 Series</div>
+      <div class="category-card" onclick="openCategory('live')">🔴 Live TV</div>
+    </div>
+
+    <div class="mt-10">
+      <a href="https://t.me/Toonix_TV" target="_blank" class="glow-button text-xl">Join @Toonix_TV on Telegram</a>
+    </div>
   </div>
 
-  <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+  <!-- Scripts -->
   <script>
-    let player = null;
+    setTimeout(() => {
+      document.getElementById('portal').style.display = 'block';
+    }, 4000);
 
-    function loadVideo() {
-      const url = document.getElementById("videoURL").value;
-      const fileInput = document.getElementById("videoFile");
-      const playerContainer = document.getElementById("playerContainer");
-
-      playerContainer.style.display = "block";
-
-      if (player) {
-        player.dispose();
-      }
-
-      player = videojs("myPlayer", {
-        controls: true,
-        autoplay: false,
-        preload: "auto",
-        fluid: true,
-      });
-
-      if (fileInput.files.length > 0) {
-        const file = fileInput.files[0];
-        const fileURL = URL.createObjectURL(file);
-        const type = file.type;
-        player.src({ src: fileURL, type });
-      } else if (url) {
-        let type = "application/x-mpegURL";
-        if (url.endsWith(".mp4")) type = "video/mp4";
-        else if (url.endsWith(".webm")) type = "video/webm";
-        player.src({ src: url, type });
-      } else {
-        alert("Please enter a valid URL or upload a file.");
-      }
-
-      player.ready(() => {
-        player.play();
-      });
+    function openCategory(name) {
+      alert(`Entering the ${name.toUpperCase()} universe... (Coming soon)`);
     }
+
+    tsParticles.load("tsparticles", {
+      fullScreen: { enable: true, zIndex: -1 },
+      particles: {
+        number: { value: 100 },
+        color: { value: "#0ff" },
+        size: { value: 2 },
+        move: { enable: true, speed: 1 },
+        links: { enable: true, color: "#f0f", distance: 150 }
+      }
+    });
   </script>
 </body>
 </html>
