@@ -3,45 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Toonix Multiverse Portal</title>
-  
-  <!-- Tailwind CSS -->
+  <title>Toonix Multiverse</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
-
-  <!-- Animate.css -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet"/>
-
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet"/>
-
-  <!-- tsParticles -->
-  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
-
   <style>
     body {
       font-family: 'Orbitron', sans-serif;
       margin: 0;
-      background: radial-gradient(circle at center, #000011 0%, #0a001a 100%);
+      padding: 0;
+      background-color: black;
       color: white;
-      overflow: hidden;
+      overflow-x: hidden;
     }
 
+    /* Marvel-Style Intro */
     #intro {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       background: black;
-      z-index: 50;
+      z-index: 9999;
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-direction: column;
-      animation: fadeOut 3s 4s forwards;
+      animation: fadeOut 4s 4s forwards;
     }
 
     .intro-logo {
       font-size: 3rem;
-      text-align: center;
-      text-shadow: 0 0 10px #0ff, 0 0 20px #f0f;
+      color: #f00;
+      letter-spacing: 10px;
+      text-transform: uppercase;
+      animation: zoomIn 3s ease-in-out;
     }
 
     @keyframes fadeOut {
@@ -51,91 +43,102 @@
       }
     }
 
-    .portal {
-      display: none;
-      padding-top: 80px;
-      text-align: center;
+    @keyframes zoomIn {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
     }
 
+    /* Glowing terminal buttons */
     .glow-button {
-      border: 2px solid #0ff;
-      padding: 1rem 2rem;
+      background: linear-gradient(to right, #ff00cc, #3333ff);
+      padding: 0.75rem 2rem;
       border-radius: 1rem;
-      background-color: rgba(0, 0, 0, 0.3);
-      text-shadow: 0 0 10px #0ff;
-      box-shadow: 0 0 20px #0ff;
-      transition: all 0.3s;
+      font-weight: bold;
+      transition: 0.3s;
+      box-shadow: 0 0 10px #0ff, 0 0 20px #f0f;
     }
 
     .glow-button:hover {
       transform: scale(1.05);
-      box-shadow: 0 0 30px #f0f, 0 0 60px #0ff;
+      box-shadow: 0 0 20px #0ff, 0 0 40px #f0f;
+    }
+
+    .glass {
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+
+    .section-title {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
     }
 
     .category-card {
-      padding: 2rem;
-      margin: 1rem;
-      border-radius: 1.5rem;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      box-shadow: 0 0 20px rgba(0,255,255,0.2);
-      cursor: pointer;
       transition: transform 0.3s;
     }
 
     .category-card:hover {
       transform: scale(1.05);
-      box-shadow: 0 0 40px rgba(255,0,255,0.5);
+      box-shadow: 0 0 20px #0ff, 0 0 20px #f0f;
     }
   </style>
 </head>
-
 <body>
 
-  <!-- Particle Background -->
-  <div id="tsparticles" class="fixed inset-0 -z-10"></div>
-
-  <!-- Intro Animation -->
+  <!-- Marvel-Style Intro -->
   <div id="intro">
-    <div class="intro-logo animate__animated animate__zoomInDown">🚀 TOONIX MULTIVERSE</div>
-    <div class="mt-4 text-xl animate__animated animate__fadeIn animate__delay-2s">Initializing Portals...</div>
+    <div class="intro-logo">TOONIX MULTIVERSE</div>
   </div>
 
-  <!-- Main Portal UI -->
-  <div id="portal" class="portal">
-    <h1 class="text-4xl mb-6">Choose Your Universe</h1>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 px-4">
-      <div class="category-card" onclick="openCategory('anime')">🌌 Anime</div>
-      <div class="category-card" onclick="openCategory('cartoons')">🌀 Cartoons</div>
-      <div class="category-card" onclick="openCategory('series')">📺 Series</div>
-      <div class="category-card" onclick="openCategory('live')">🔴 Live TV</div>
+  <!-- Header -->
+  <header class="text-center p-6 bg-black">
+    <img src="https://cdn5.cdn-telegram.org/file/pftpARIH3rlNmSXjwODWJ64OjWO9gDGtpK2ivS3QbHIBhWsXITN05ZTMFeo7-81HA65WnMwigigUOdIXKSqQHvazIpvl-PX5z3mNtn68M9dybjH3fFBzVMTtwB4NLDh2Nxg9wt2zvPCk0LQbaUwOCc6RllJbeIwXOKBvepuMzU-zok2WHdP7UnIyJ_1tjskTZ8Zno1RfxetABHO_eXQXpdAtUZSuhlZWg5dsl38caBkPbCjmLp9SLsJzr4KPabmI5TzOQX0ft6N96SiPnGv9olzSq1AOOGjaH98xtM_NMrq-G0WoTWzdIR3Es2XZ_78_03e64aKD5T9ajLhwmAY5pg.jpg"
+         class="h-24 w-24 mx-auto rounded-full border-4 border-purple-500"/>
+    <h1 class="text-4xl mt-4 font-bold">Toonix Multiverse Portal</h1>
+    <p class="text-gray-400 text-sm">Enter a universe of anime, cartoons, live TV, and more!</p>
+  </header>
+
+  <!-- Categories -->
+  <section class="p-4 text-center">
+    <h2 class="section-title">Multiverse Portals</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+      <div class="category-card p-4 glass rounded-xl cursor-pointer" onclick="alert('Coming soon: Anime')">
+        <h3 class="text-xl font-bold text-pink-400">Anime</h3>
+        <p class="text-sm text-gray-300">Explore the best Japanese anime</p>
+      </div>
+      <div class="category-card p-4 glass rounded-xl cursor-pointer" onclick="alert('Coming soon: Cartoons')">
+        <h3 class="text-xl font-bold text-yellow-400">Cartoons</h3>
+        <p class="text-sm text-gray-300">Classic and modern cartoons</p>
+      </div>
+      <div class="category-card p-4 glass rounded-xl cursor-pointer" onclick="alert('Coming soon: Live TV')">
+        <h3 class="text-xl font-bold text-green-400">Live TV</h3>
+        <p class="text-sm text-gray-300">Watch live TV channels</p>
+      </div>
+      <div class="category-card p-4 glass rounded-xl cursor-pointer" onclick="alert('Coming soon: Series')">
+        <h3 class="text-xl font-bold text-blue-400">Series</h3>
+        <p class="text-sm text-gray-300">Popular TV shows & web series</p>
+      </div>
     </div>
+  </section>
 
-    <div class="mt-10">
-      <a href="https://t.me/Toonix_TV" target="_blank" class="glow-button text-xl">Join @Toonix_TV on Telegram</a>
-    </div>
-  </div>
+  <!-- Telegram CTA -->
+  <section class="text-center mt-10">
+    <a href="https://t.me/Toonix_TV" target="_blank" class="glow-button inline-block">Join us on Telegram</a>
+  </section>
 
-  <!-- Scripts -->
-  <script>
-    setTimeout(() => {
-      document.getElementById('portal').style.display = 'block';
-    }, 4000);
+  <footer class="text-center text-gray-500 mt-10 p-4 text-sm">
+    &copy; 2025 Toonix Multiverse. Powered by imagination.
+  </footer>
 
-    function openCategory(name) {
-      alert(`Entering the ${name.toUpperCase()} universe... (Coming soon)`);
-    }
-
-    tsParticles.load("tsparticles", {
-      fullScreen: { enable: true, zIndex: -1 },
-      particles: {
-        number: { value: 100 },
-        color: { value: "#0ff" },
-        size: { value: 2 },
-        move: { enable: true, speed: 1 },
-        links: { enable: true, color: "#f0f", distance: 150 }
-      }
-    });
-  </script>
 </body>
 </html>
