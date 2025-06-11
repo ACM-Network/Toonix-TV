@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -9,136 +8,136 @@
   <style>
     body {
       font-family: 'Orbitron', sans-serif;
-      margin: 0;
-      padding: 0;
       background-color: black;
       color: white;
       overflow-x: hidden;
-    }
+    }#intro {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: black;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeOut 4s 4s forwards;
+}
 
-    /* Marvel-Style Intro */
-    #intro {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: black;
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      animation: fadeOut 4s 4s forwards;
-    }
+.intro-logo {
+  font-size: 3rem;
+  color: #f00;
+  letter-spacing: 10px;
+  text-transform: uppercase;
+  animation: zoomIn 3s ease-in-out;
+}
 
-    .intro-logo {
-      font-size: 3rem;
-      color: #f00;
-      letter-spacing: 10px;
-      text-transform: uppercase;
-      animation: zoomIn 3s ease-in-out;
-    }
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
 
-    @keyframes fadeOut {
-      to {
-        opacity: 0;
-        visibility: hidden;
-      }
-    }
+@keyframes zoomIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
 
-    @keyframes zoomIn {
-      0% {
-        transform: scale(0);
-        opacity: 0;
-      }
-      100% {
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
+.glow-button {
+  background: linear-gradient(to right, #ff00cc, #3333ff);
+  padding: 0.75rem 2rem;
+  border-radius: 1rem;
+  font-weight: bold;
+  transition: 0.3s;
+  box-shadow: 0 0 10px #0ff, 0 0 20px #f0f;
+}
 
-    /* Glowing terminal buttons */
-    .glow-button {
-      background: linear-gradient(to right, #ff00cc, #3333ff);
-      padding: 0.75rem 2rem;
-      border-radius: 1rem;
-      font-weight: bold;
-      transition: 0.3s;
-      box-shadow: 0 0 10px #0ff, 0 0 20px #f0f;
-    }
+.glow-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px #0ff, 0 0 40px #f0f;
+}
 
-    .glow-button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 20px #0ff, 0 0 40px #f0f;
-    }
+.glass {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
 
-    .glass {
-      backdrop-filter: blur(10px);
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-    }
+.ai-assistant {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px 20px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  color: cyan;
+  font-family: monospace;
+  font-size: 14px;
+  animation: pulse 2s infinite;
+  box-shadow: 0 0 20px cyan;
+}
 
-    .section-title {
-      font-size: 2rem;
-      font-weight: bold;
-      margin-top: 2rem;
-      margin-bottom: 1rem;
-    }
+@keyframes pulse {
+  0% { box-shadow: 0 0 5px cyan; }
+  50% { box-shadow: 0 0 20px cyan; }
+  100% { box-shadow: 0 0 5px cyan; }
+}
 
-    .category-card {
-      transition: transform 0.3s;
-    }
-
-    .category-card:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 20px #0ff, 0 0 20px #f0f;
-    }
   </style>
 </head>
-<body>
-
-  <!-- Marvel-Style Intro -->
-  <div id="intro">
+<body>  <!-- Marvel-Style Intro -->  <div id="intro">
     <div class="intro-logo">TOONIX MULTIVERSE</div>
-  </div>
-
-  <!-- Header -->
-  <header class="text-center p-6 bg-black">
+  </div>  <!-- Header -->  <header class="text-center p-6 bg-black">
     <img src="https://cdn5.cdn-telegram.org/file/pftpARIH3rlNmSXjwODWJ64OjWO9gDGtpK2ivS3QbHIBhWsXITN05ZTMFeo7-81HA65WnMwigigUOdIXKSqQHvazIpvl-PX5z3mNtn68M9dybjH3fFBzVMTtwB4NLDh2Nxg9wt2zvPCk0LQbaUwOCc6RllJbeIwXOKBvepuMzU-zok2WHdP7UnIyJ_1tjskTZ8Zno1RfxetABHO_eXQXpdAtUZSuhlZWg5dsl38caBkPbCjmLp9SLsJzr4KPabmI5TzOQX0ft6N96SiPnGv9olzSq1AOOGjaH98xtM_NMrq-G0WoTWzdIR3Es2XZ_78_03e64aKD5T9ajLhwmAY5pg.jpg"
          class="h-24 w-24 mx-auto rounded-full border-4 border-purple-500"/>
     <h1 class="text-4xl mt-4 font-bold">Toonix Multiverse Portal</h1>
     <p class="text-gray-400 text-sm">Enter a universe of anime, cartoons, live TV, and more!</p>
-  </header>
-
-  <!-- Categories -->
-  <section class="p-4 text-center">
-    <h2 class="section-title">Multiverse Portals</h2>
+  </header>  <!-- Categories -->  <section class="p-4 text-center">
+    <h2 class="text-2xl font-bold">Multiverse Portals</h2>
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-      <div class="category-card p-4 glass rounded-xl cursor-pointer" onclick="alert('Coming soon: Anime')">
-        <h3 class="text-xl font-bold text-pink-400">Anime</h3>
+      <div class="glass p-4 rounded-xl cursor-pointer hover:scale-105 transition" onclick="alert('Coming soon: Anime')">
+        <h3 class="text-xl text-pink-400 font-bold">Anime</h3>
         <p class="text-sm text-gray-300">Explore the best Japanese anime</p>
       </div>
-      <div class="category-card p-4 glass rounded-xl cursor-pointer" onclick="alert('Coming soon: Cartoons')">
-        <h3 class="text-xl font-bold text-yellow-400">Cartoons</h3>
+      <div class="glass p-4 rounded-xl cursor-pointer hover:scale-105 transition" onclick="alert('Coming soon: Cartoons')">
+        <h3 class="text-xl text-yellow-400 font-bold">Cartoons</h3>
         <p class="text-sm text-gray-300">Classic and modern cartoons</p>
       </div>
-      <div class="category-card p-4 glass rounded-xl cursor-pointer" onclick="alert('Coming soon: Live TV')">
-        <h3 class="text-xl font-bold text-green-400">Live TV</h3>
+      <div class="glass p-4 rounded-xl cursor-pointer hover:scale-105 transition" onclick="alert('Coming soon: Live TV')">
+        <h3 class="text-xl text-green-400 font-bold">Live TV</h3>
         <p class="text-sm text-gray-300">Watch live TV channels</p>
       </div>
-      <div class="category-card p-4 glass rounded-xl cursor-pointer" onclick="alert('Coming soon: Series')">
-        <h3 class="text-xl font-bold text-blue-400">Series</h3>
+      <div class="glass p-4 rounded-xl cursor-pointer hover:scale-105 transition" onclick="alert('Coming soon: Series')">
+        <h3 class="text-xl text-blue-400 font-bold">Series</h3>
         <p class="text-sm text-gray-300">Popular TV shows & web series</p>
       </div>
     </div>
-  </section>
-
-  <!-- Telegram CTA -->
-  <section class="text-center mt-10">
+  </section>  <!-- Telegram CTA -->  <section class="text-center mt-10">
     <a href="https://t.me/Toonix_TV" target="_blank" class="glow-button inline-block">Join us on Telegram</a>
-  </section>
+  </section>  <!-- AI Assistant -->  <div class="ai-assistant" id="jarvis">
+    <span id="jarvisText">Hello, I am JARVIS. How can I help you?</span>
+  </div>  <script>
+    // AI message updates (simulate)
+    const messages = [
+      "Scanning multiverse portals...",
+      "Initializing M3U playlist engine...",
+      "Ready to assist you, commander!",
+      "New updates available. Want to explore?"
+    ];
 
-  <footer class="text-center text-gray-500 mt-10 p-4 text-sm">
+    let index = 0;
+    setInterval(() => {
+      document.getElementById("jarvisText").innerText = messages[index % messages.length];
+      index++;
+    }, 5000);
+  </script>  <footer class="text-center text-gray-500 mt-10 p-4 text-sm">
     &copy; 2025 Toonix Multiverse. Powered by imagination.
-  </footer>
-
-</body>
+  </footer></body>
 </html>
