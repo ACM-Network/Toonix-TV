@@ -3,14 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Toonix TV - Playlist Player</title>
+  <title>Toonix TV - Custom M3U8 Player</title>
 
   <!-- Tailwind CSS -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
-  <!-- Google Font -->
+  <!-- Orbitron Font -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet"/>
   <!-- tsParticles -->
   <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+
+  <!-- Video.js -->
+  <link href="https://vjs.zencdn.net/8.9.0/video-js.min.css" rel="stylesheet" />
+  <script src="https://vjs.zencdn.net/8.9.0/video.min.js"></script>
 
   <style>
     body {
@@ -24,95 +28,72 @@
       text-shadow: 0 0 5px #fff, 0 0 20px #f0f, 0 0 30px #0ff, 0 0 40px #f0f;
     }
 
-    #intro {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: black;
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      animation: fadeOut 3s 2.5s forwards;
-      pointer-events: none;
-    }
-
-    @keyframes fadeOut {
-      to {opacity: 0; visibility: hidden;}
-    }
-
     #tsparticles {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       z-index: -1;
     }
 
-    .glass {
-      backdrop-filter: blur(20px);
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    .video-js {
+      border-radius: 20px;
+      box-shadow: 0 0 30px #0ff;
     }
   </style>
 </head>
 <body>
 
-  <!-- Intro Animation -->
-  <div id="intro">
-    <h1 class="text-4xl neon-text animate-pulse">🚀 Toonix TV</h1>
-  </div>
-
   <!-- Background Particles -->
   <div id="tsparticles"></div>
 
-  <!-- Page Content -->
-  <div class="relative z-10 flex flex-col items-center justify-center min-h-screen p-6">
+  <!-- Main UI -->
+  <div class="z-10 relative flex flex-col items-center justify-center min-h-screen p-4">
+    <h1 class="text-4xl md:text-5xl mb-6 neon-text text-center">🚀 Toonix TV - M3U8 VFX Player</h1>
 
-    <h1 class="text-4xl md:text-6xl mb-4 neon-text text-center">Toonix TV Player</h1>
-
-    <!-- Input Box -->
+    <!-- M3U8 URL Input -->
     <input
       id="videoUrl"
       type="text"
-      placeholder="Paste M3U8 / M3U Playlist URL here..."
-      class="z-50 relative w-11/12 md:w-2/3 p-3 rounded-xl text-black bg-white outline-none shadow-lg mb-4"
+      placeholder="Paste .m3u8 or playlist link here..."
+      class="w-11/12 md:w-2/3 p-3 mb-4 rounded-xl text-black bg-white shadow-xl"
     />
 
-    <!-- Video Player -->
+    <!-- Video.js Player -->
     <video
       id="player"
-      class="w-full md:w-2/3 rounded-lg shadow-xl glass"
+      class="video-js vjs-default-skin w-full md:w-2/3"
       controls
-      autoplay
+      preload="auto"
       playsinline
     ></video>
   </div>
 
-  <!-- Scripts -->
   <script>
     // Load particles
     tsParticles.load("tsparticles", {
       fullScreen: { enable: true, zIndex: -1 },
       particles: {
-        number: { value: 100 },
-        size: { value: 2 },
-        color: { value: "#0ff" },
+        number: { value: 80 },
+        size: { value: 3 },
+        color: { value: "#f0f" },
         move: { enable: true, speed: 1 },
-        links: { enable: true, color: "#f0f", distance: 150 }
+        links: { enable: true, color: "#0ff", distance: 150 }
       }
     });
 
-    // Play video when input changes
-    const input = document.getElementById("videoUrl");
-    const player = document.getElementById("player");
+    // Setup Video.js Player
+    const player = videojs('player');
+    const input = document.getElementById('videoUrl');
 
-    input.addEventListener("change", () => {
+    input.addEventListener('change', () => {
       const url = input.value.trim();
-      if (url.endsWith(".m3u8") || url.endsWith(".m3u") || url.includes(".m3u8?") || url.includes(".m3u?")) {
-        player.src = url;
-        player.load();
+      if (url.endsWith(".m3u8") || url.includes(".m3u8")) {
+        player.src({
+          src: url,
+          type: 'application/x-mpegURL'
+        });
         player.play();
       } else {
-        alert("Please enter a valid .m3u or .m3u8 video URL.");
+        alert("Enter a valid .m3u8 stream URL");
       }
     });
   </script>
