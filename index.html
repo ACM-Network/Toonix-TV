@@ -3,111 +3,99 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Toonix Multiverse</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+  <title>Toonix Multiverse — Public Content</title>
   <style>
-    body {
-      font-family: 'Orbitron', sans-serif;
-      margin: 0;
-      background: #000;
-      color: #fff;
-    }
-    header { padding: 2rem; text-align: center; }
-    .logo { width: 100px; border-radius: 9999px; }
-    section { padding: 1rem; }
-    .grid { display: grid; gap: 1rem; }
-    @media(min-width: 640px) { .grid-cols-2 { grid-template-columns: repeat(2,1fr); } }
-    @media(min-width: 1024px) { .grid-cols-4 { grid-template-columns: repeat(4,1fr); } }
-    .card { background: rgba(255,255,255,0.05); border-radius: 1rem; padding: 1rem; }
-    .card h3 { margin-top: 0; }
-    iframe { width:100%; height:200px; border-radius: .5rem; }
+    body { margin:0; font-family:sans-serif; background:#000; color:#fff; }
+    header { text-align:center; padding:20px; }
+    .logo { width:80px; border-radius:50%; }
+    section { padding:20px; }
+    .grid { display:grid; gap:15px; }
+    @media (min-width:600px){ .grid-2 { grid-template-columns:repeat(2,1fr);} }
+    @media (min-width:900px){ .grid-4 { grid-template-columns:repeat(4,1fr);} }
+    .card { background:rgba(255,255,255,0.05); border-radius:10px; padding:15px; }
+    .card h3 { margin:0 0 10px; font-size:18px; }
+    .card iframe, .card button { width:100%; border:none; border-radius:5px; }
+    .card button { padding:8px; background:#1e90ff; color:#fff; cursor:pointer; }
+    #modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8);
+             justify-content:center; align-items:center; }
+    #player { width:90%; max-width:600px; border-radius:8px; background:#000; }
+    #close { position:absolute; top:10px; right:10px; background:red; color:#fff;
+             border:none; padding:5px 10px; cursor:pointer; }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
   <header>
-    <img class="logo" src="https://cdn5.cdn-telegram.org/file/pftpARIH3rlNmSXjwODWJ64OjWO9gDGtpK2ivS3QbHIBhWsXITN05ZTMFeo7-81HA65WnMwigigUOdIXKSqQHvazIpvl-PX5z3mNtn68M9dybjH3fFBzVMTtwB4NLDh2Nxg9wt2vPCk0LQbaUwOCc6RllJbeIwXOKBvepuMzU-zok2WHdP7UnIyJ_1tjskTZ8Zno1RfxetABHO_eXQXpdAtUZSuhlZWg5dsl38caBkPbCjmLp9SLsJzr4KPabmI5TzOQX0ft6N96SiPnGv9olzSq1AOOGjaH98xtM_NMrq-G0WoTWzdIR3Es2XZ_78_03e64aKD5T9ajLhwmAY5pg.jpg" alt="Toonix Logo"/>
-    <h1 class="text-3xl font-bold">Toonix Multiverse – Live & Classic</h1>
+    <img src="https://cdn5.cdn-telegram.org/file/pftpARIH...jpg" alt="Toonix Logo" class="logo">
+    <h1>Toonix Multiverse — Public Content</h1>
   </header>
 
-  <!-- Live TV -->
   <section>
-    <h2 class="text-2xl font-bold mb-4">🎥 Live TV Channels</h2>
-    <div class="grid grid-cols-2 lg:grid-cols-4">
+    <h2>📺 Live TV Channels</h2>
+    <div class="grid grid-2 grid-4">
       <div class="card">
-        <h3>CBC News (Canada)</h3>
-        <p>Free Canadian news stream</p>
-        <button onclick="play('https://livecbcdai-i.akamaihd.net/hls/live/567245/event2/CBCNN/master6.m3u8');">Play</button>
+        <h3>CBC News Canada</h3>
+        <button onclick="play('https://livecbcdai-i.akamaihd.net/hls/live/567245/event2/CBCNN/master6.m3u8')">Play Live</button>
       </div>
       <div class="card">
-        <h3>NHK World (Japan)</h3>
-        <p>1080p global news</p>
-        <button onclick="play('https://nhkwlive-ojp.akamaized.net/hls/live/2003459/nhkwlive-ojp-en/index.m3u8');">Play</button>
+        <h3>NHK World Japan</h3>
+        <button onclick="play('https://nhkwlive-ojp.akamaized.net/hls/live/2003459/nhkwlive-ojp-en/index.m3u8')">Play Live</button>
       </div>
       <div class="card">
-        <h3>DD Tripura (India)</h3>
-        <p>Regional India channel</p>
-        <button onclick="play('https://d3qs3d2rkhfqrt.cloudfront.net/out/v1/52b998e9510d41c29ad2ceca8ea3d849/index_3.m3u8');">Play</button>
+        <h3>Global TV Canada</h3>
+        <button onclick="play('https://glblvhalifax-lh.akamaihd.net/i/glblvHalifax_1@119843/master.m3u8')">Play Live</button>
       </div>
       <div class="card">
-        <h3>Global TV (Canada)</h3>
-        <p>News & entertainment</p>
-        <button onclick="play('https://glblvstudents-lh.akamaihd.net/hls/live/12345/global/master.m3u8');">Play</button>
+        <h3>Turkish Live TV Playlist</h3>
+        <button onclick="play('https://github.com/exfair/tv/raw/main/tv.m3u8')">Play Playlist</button>
       </div>
     </div>
   </section>
 
-  <!-- Classic Public-Domain Films -->
   <section>
-    <h2 class="text-2xl font-bold mb-4">🎬 Public-Domain Classics</h2>
-    <div class="grid grid-cols-2 lg:grid-cols-4">
-      <div class="card">
-        <h3>The General (1926)</h3>
-        <iframe src="https://archive.org/embed/TheGeneral1926" allowfullscreen></iframe>
-      </div>
-      <div class="card">
-        <h3>Carnival of Souls (1962)</h3>
-        <iframe src="https://archive.org/embed/carnivalofsouls" allowfullscreen></iframe>
-      </div>
-      <div class="card">
-        <h3>Steamboat Willie (1928)</h3>
-        <iframe src="https://archive.org/embed/steamboatwillie" allowfullscreen></iframe>
-      </div>
-      <div class="card">
-        <h3>Undercover (1943)</h3>
-        <iframe src="https://archive.org/embed/undercovertraining" allowfullscreen></iframe>
-      </div>
+    <h2>🎬 Public-Domain Movies</h2>
+    <div class="grid grid-2 grid-4">
+      <iframe class="card" src="https://archive.org/embed/carnivalofsouls" allowfullscreen></iframe>
+      <iframe class="card" src="https://archive.org/embed/TheGeneral1926" allowfullscreen></iframe>
+      <iframe class="card" src="https://archive.org/embed/steamboatwillie" allowfullscreen></iframe>
+      <iframe class="card" src="https://archive.org/embed/undercovertraining" allowfullscreen></iframe>
     </div>
   </section>
 
-  <!-- Footer / Telegram -->
-  <footer class="text-center p-4">
-    <a href="https://t.me/Toonix_TV" target="_blank" class="text-blue-400">Join our Telegram channel</a>
-    <p class="text-gray-500 mt-2">© 2025 Toonix Multiverse</p>
-  </footer>
-
-  <!-- Video Player Modal (hidden until play clicked) -->
-  <div id="modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); justify-content:center;align-items:center;">
-    <div style="position:relative; width:90%; max-width:600px;">
-      <button onclick="closeModal()" style="position:absolute; top:10px; right:10px; z-index:2;">✖</button>
-      <video id="livePlayer" controls autoplay style="width:100%; border-radius:8px; background:black;"></video>
+  <section>
+    <h2>📽️ Anime (Free on YouTube)</h2>
+    <div class="grid grid-2 grid-4">
+      <div class="card"><h3>One Punch Man (Muse Asia)</h3><a href="https://www.youtube.com/c/MuseAsia" target="_blank">Watch on YouTube</a></div>
+      <div class="card"><h3>Tokyo Revengers (Muse Asia)</h3><a href="https://www.youtube.com/c/MuseAsia" target="_blank">Watch on YouTube</a></div>
+      <div class="card"><h3>Saint Seiya: The Lost Canvas</h3><a href="https://www.youtube.com/c/tmsanimeofficial" target="_blank">Watch on YouTube</a></div>
+      <div class="card"><h3>The Seven Deadly Sins</h3><a href="https://www.youtube.com/c/MuseAsia" target="_blank">Watch on YouTube</a></div>
     </div>
+  </section>
+
+  <section>
+    <h2>📺 Classic Public-Domain Series</h2>
+    <div class="grid grid-2 grid-4">
+      <iframe class="card" src="https://archive.org/embed/Tales_Of_Tomorrow" allowfullscreen></iframe>
+      <iframe class="card" src="https://archive.org/embed/The_Big_Picture" allowfullscreen></iframe>
+      <div class="card"><h3>The Beverly Hillbillies</h3><a href="https://archive.org/details/BeverlyHillbilliesS1" target="_blank">View Episodes</a></div>
+      <div class="card"><h3>One Step Beyond (1959)</h3><a href="https://www.youtube.com/@one-step-beyond-1959" target="_blank">Watch on YouTube</a></div>
+    </div>
+  </section>
+
+  <div id="modal">
+    <button id="close" onclick="closeModal()">✖</button>
+    <video id="player" controls autoplay></video>
   </div>
 
   <script>
-    function play(src) {
-      const modal = document.getElementById('modal');
-      const player = document.getElementById('livePlayer');
-      player.src = src;
-      modal.style.display = 'flex';
+    function play(src){
+      document.getElementById('player').src = src;
+      document.getElementById('modal').style.display = 'flex';
     }
-    function closeModal() {
-      const modal = document.getElementById('modal');
-      document.getElementById('livePlayer').src = '';
-      modal.style.display = 'none';
+    function closeModal(){
+      document.getElementById('player').src = '';
+      document.getElementById('modal').style.display = 'none';
     }
   </script>
-
 </body>
 </html>
