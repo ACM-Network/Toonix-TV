@@ -3,129 +3,119 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Toonix TV - Live Player</title>
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <title>Toonix TV - M3U Playlist Player</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
   <style>
     body {
       font-family: sans-serif;
       background: #000;
       color: white;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
     }
+
+    .container {
+      max-width: 100%;
+      padding: 1rem;
+    }
+
     video {
       width: 100%;
-      max-height: 70vh;
-      background: black;
+      height: auto;
+      border-radius: 1rem;
     }
+
+    input, button {
+      color: black;
+    }
+
     .channel-thumb {
       width: 50px;
       height: 50px;
       object-fit: contain;
-      margin-right: 10px;
+    }
+
+    .channel-item:hover {
+      background-color: #222;
     }
   </style>
 </head>
-<body class="text-center p-4 space-y-6">
-  <h1 class="text-3xl font-bold text-pink-500">🎬 Toonix TV Player</h1>
+<body>
+  <div class="container mx-auto text-center">
+    <h1 class="text-3xl font-bold mb-4">🎬 Toonix TV - Playlist Player</h1>
+    
+    <!-- Link Input Section -->
+    <div id="linkInputBox" class="mb-4">
+      <input type="text" id="m3uInput" placeholder="Paste M3U/M3U8 link..." class="p-2 rounded w-4/5 md:w-1/2" />
+      <button onclick="loadPlaylist()" class="bg-purple-600 text-white px-4 py-2 rounded ml-2">Load</button>
+    </div>
 
-  <!-- Input Form -->
-  <div class="space-y-4">
-    <input type="url" id="m3u8url" placeholder="Paste M3U8 or M3U playlist URL" class="p-2 w-full text-black rounded" />
-    <input type="file" id="fileInput" accept=".m3u,.m3u8" class="text-sm"/>
-    <button onclick="loadInput()" class="bg-purple-600 hover:bg-purple-800 px-4 py-2 rounded">Load</button>
+    <!-- Channel List -->
+    <div id="channelList" class="text-left max-h-[300px] overflow-y-auto hidden mt-4 mb-6"></div>
+
+    <!-- Video Player -->
+    <div id="playerBox" class="hidden">
+      <video id="videoPlayer" controls crossorigin="anonymous"></video>
+    </div>
   </div>
-
-  <!-- Video Player -->
-  <div id="playerContainer" class="hidden">
-    <video id="video" controls autoplay></video>
-  </div>
-
-  <!-- Playlist Container -->
-  <div id="playlistContainer" class="space-y-2 mt-6"></div>
 
   <script>
-    let video = document.getElementById('video');
-    let hls = null;
-
-    function playStream(url) {
-      document.getElementById('playerContainer').classList.remove('hidden');
-
-      if (hls) {
-        hls.destroy();
-        hls = null;
+    async function loadPlaylist() {
+      const url = document.getElementById('m3uInput').value.trim();
+      if (!url.endsWith('.m3u') && !url.endsWith('.m3u8')) {
+        alert('Please enter a valid M3U or M3U8 playlist URL');
+        return;
       }
 
-      if (Hls.isSupported()) {
-        hls = new Hls({ enableWebVTT: true });
-        hls.loadSource(url);
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, function () {
-          video.play();
+      try {
+        const res = await fetch(url);
+        const text = await res.text();
+        const lines = text.split('\n');
+        const channels = [];
+        let current = {};
+
+        lines.forEach(line => {
+          if (line.startsWith('#EXTINF')) {
+            const match = line.match(/tvg-logo="(.*?)".*,(.*)/);
+            current = {
+              logo: match ? match[1] : '',
+              name: match ? match[2] : 'Unnamed Channel',
+              url: ''
+            };
+          } else if (line.startsWith('http')) {
+            current.url = line.trim();
+            channels.push({ ...current });
+          }
         });
-        hls.on(Hls.Events.AUDIO_TRACKS_UPDATED, function (event, data) {
-          console.log('Audio tracks:', data.audioTracks);
+
+        const listDiv = document.getElementById('channelList');
+        listDiv.innerHTML = '';
+        channels.forEach(ch => {
+          const item = document.createElement('div');
+          item.className = 'channel-item flex items-center p-2 cursor-pointer border-b border-gray-700';
+          item.onclick = () => playChannel(ch.url);
+
+          item.innerHTML = `
+            <img src="${ch.logo}" class="channel-thumb mr-3" onerror="this.src='https://via.placeholder.com/50?text=TV'" />
+            <span>${ch.name}</span>
+          `;
+          listDiv.appendChild(item);
         });
-      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = url;
-        video.play();
+
+        listDiv.classList.remove('hidden');
+        document.getElementById('playerBox').classList.remove('hidden');
+      } catch (e) {
+        alert('Error loading playlist.');
+        console.error(e);
       }
     }
 
-    function loadInput() {
-      const url = document.getElementById('m3u8url').value;
-      const file = document.getElementById('fileInput').files[0];
-
-      if (url.endsWith(".m3u") || url.endsWith(".m3u8")) {
-        fetch(url)
-          .then(res => res.text())
-          .then(parseM3U)
-          .catch(() => alert("Invalid URL or Playlist"));
-      } else if (file) {
-        const reader = new FileReader();
-        reader.onload = e => parseM3U(e.target.result);
-        reader.readAsText(file);
-      } else if (url.endsWith(".m3u8")) {
-        playStream(url);
-      } else {
-        alert("Please provide a valid .m3u/.m3u8 file or URL");
-      }
-    }
-
-    function parseM3U(text) {
-      const lines = text.split('\n');
-      const playlist = [];
-      let current = {};
-
-      lines.forEach(line => {
-        if (line.startsWith('#EXTINF')) {
-          const nameMatch = line.match(/,(.*)/);
-          const logoMatch = line.match(/tvg-logo="([^"]+)"/);
-          current = {
-            name: nameMatch ? nameMatch[1] : 'Unknown',
-            logo: logoMatch ? logoMatch[1] : '',
-          };
-        } else if (line.startsWith('http')) {
-          current.url = line.trim();
-          playlist.push({...current});
-        }
-      });
-
-      displayPlaylist(playlist);
-    }
-
-    function displayPlaylist(playlist) {
-      const container = document.getElementById('playlistContainer');
-      container.innerHTML = '';
-      playlist.forEach(item => {
-        const div = document.createElement('div');
-        div.className = "flex items-center p-2 bg-gray-800 rounded cursor-pointer hover:bg-gray-700";
-        div.onclick = () => playStream(item.url);
-        div.innerHTML = `
-          ${item.logo ? `<img src="${item.logo}" class="channel-thumb"/>` : ''}
-          <span class="text-left">${item.name}</span>
-        `;
-        container.appendChild(div);
-      });
+    function playChannel(url) {
+      const player = document.getElementById('videoPlayer');
+      player.src = url;
+      player.load();
+      player.play();
     }
   </script>
 </body>
