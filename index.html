@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Toonix TV - Custom M3U8 Player</title>
+  <title>Toonix TV - Load Stream</title>
 
   <!-- Tailwind CSS -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
@@ -11,7 +11,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet"/>
   <!-- tsParticles -->
   <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
-
   <!-- Video.js -->
   <link href="https://vjs.zencdn.net/8.9.0/video-js.min.css" rel="stylesheet" />
   <script src="https://vjs.zencdn.net/8.9.0/video.min.js"></script>
@@ -28,47 +27,64 @@
       text-shadow: 0 0 5px #fff, 0 0 20px #f0f, 0 0 30px #0ff, 0 0 40px #f0f;
     }
 
+    .video-js {
+      border-radius: 20px;
+      box-shadow: 0 0 30px #0ff;
+    }
+
+    #playerContainer {
+      display: none;
+    }
+
     #tsparticles {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       z-index: -1;
     }
-
-    .video-js {
-      border-radius: 20px;
-      box-shadow: 0 0 30px #0ff;
-    }
   </style>
 </head>
 <body>
 
-  <!-- Background Particles -->
+  <!-- Particles Background -->
   <div id="tsparticles"></div>
 
-  <!-- Main UI -->
-  <div class="z-10 relative flex flex-col items-center justify-center min-h-screen p-4">
-    <h1 class="text-4xl md:text-5xl mb-6 neon-text text-center">🚀 Toonix TV - M3U8 VFX Player</h1>
+  <!-- Main Interface -->
+  <div class="z-10 relative flex flex-col items-center justify-center min-h-screen p-6">
+    <h1 class="text-4xl md:text-5xl mb-6 neon-text text-center">🚀 Toonix TV - Enter Stream</h1>
 
-    <!-- M3U8 URL Input -->
+    <!-- Input Link -->
     <input
       id="videoUrl"
       type="text"
-      placeholder="Paste .m3u8 or playlist link here..."
+      placeholder="Enter .m3u8 or stream link..."
       class="w-11/12 md:w-2/3 p-3 mb-4 rounded-xl text-black bg-white shadow-xl"
     />
 
-    <!-- Video.js Player -->
-    <video
-      id="player"
-      class="video-js vjs-default-skin w-full md:w-2/3"
-      controls
-      preload="auto"
-      playsinline
-    ></video>
+    <!-- OR Upload File -->
+    <p class="text-sm text-gray-300 mb-2">OR</p>
+    <input
+      id="videoFile"
+      type="file"
+      accept="application/x-mpegURL,video/mp4"
+      class="mb-6 text-white"
+    />
+
+    <!-- Load Button -->
+    <button
+      onclick="loadStream()"
+      class="px-6 py-3 bg-purple-600 neon-text rounded-xl hover:scale-105 transform transition"
+    >
+      Load Video
+    </button>
+
+    <!-- Hidden Video Player -->
+    <div id="playerContainer" class="mt-8 w-full md:w-2/3">
+      <video id="player" class="video-js vjs-default-skin" controls preload="auto" playsinline></video>
+    </div>
   </div>
 
   <script>
-    // Load particles
+    // Load tsParticles
     tsParticles.load("tsparticles", {
       fullScreen: { enable: true, zIndex: -1 },
       particles: {
@@ -80,22 +96,30 @@
       }
     });
 
-    // Setup Video.js Player
+    // Setup Video.js
     const player = videojs('player');
-    const input = document.getElementById('videoUrl');
+    const urlInput = document.getElementById('videoUrl');
+    const fileInput = document.getElementById('videoFile');
+    const playerContainer = document.getElementById('playerContainer');
 
-    input.addEventListener('change', () => {
-      const url = input.value.trim();
-      if (url.endsWith(".m3u8") || url.includes(".m3u8")) {
-        player.src({
-          src: url,
-          type: 'application/x-mpegURL'
-        });
-        player.play();
+    function loadStream() {
+      const url = urlInput.value.trim();
+      const file = fileInput.files[0];
+
+      if (url && url.endsWith('.m3u8')) {
+        player.src({ src: url, type: 'application/x-mpegURL' });
+      } else if (file) {
+        const fileURL = URL.createObjectURL(file);
+        player.src({ src: fileURL, type: file.type });
       } else {
-        alert("Enter a valid .m3u8 stream URL");
+        alert("Please enter a valid .m3u8 URL or upload a video file.");
+        return;
       }
-    });
+
+      // Show the player
+      playerContainer.style.display = 'block';
+      player.play();
+    }
   </script>
 
 </body>
