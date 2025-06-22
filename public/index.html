@@ -3,139 +3,209 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Toonix TV</title>
-  <link rel="icon" type="image/png" href="favicon.png" />
+  <title>Toonix TV Player</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.10/hls.min.js"></script>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
     body {
       background: linear-gradient(135deg, #0f0f23, #1a1a2e);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #fff;
-      min-height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 2rem;
+      height: 100vh;
     }
-    .player-container {
-      width: 100%;
-      max-width: 960px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 0 60px rgba(78, 205, 196, 0.2);
-      backdrop-filter: blur(10px);
-    }
-    .video-box {
+
+    .player-wrapper {
       position: relative;
-      width: 100%;
+      width: 90%;
+      max-width: 960px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 0 30px rgba(78, 205, 196, 0.2);
     }
+
     video {
       width: 100%;
-      height: auto;
       display: block;
+      border-radius: 16px;
       background: black;
     }
-    .controls-bar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem;
-      background: rgba(0, 0, 0, 0.7);
+
+    .menu-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.7);
+      border: none;
+      color: white;
+      font-size: 20px;
+      padding: 0.3rem 0.6rem;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 10;
     }
-    .controls-bar select,
-    .controls-bar button {
-      padding: 0.5rem 1rem;
+
+    .menu-panel {
+      position: absolute;
+      top: 50px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.85);
+      color: white;
+      border-radius: 10px;
+      padding: 0.8rem;
+      width: 220px;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 10;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .menu-panel select,
+    .menu-panel button {
+      padding: 0.4rem;
       background: #4ecdc4;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       color: #0f0f23;
       font-weight: bold;
       cursor: pointer;
-      transition: 0.3s;
     }
-    .controls-bar button:hover,
-    .controls-bar select:hover {
+
+    .menu-panel button:hover,
+    .menu-panel select:hover {
       background: #38bcb2;
     }
-    .controls-bar input {
-      padding: 0.5rem;
-      border-radius: 8px;
-      border: none;
-      outline: none;
-      width: 60%;
-      margin: 0.5rem 0;
-    }
-    .top-bar {
-      padding: 1rem;
+
+    .url-bar {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
       background: rgba(0, 0, 0, 0.6);
-      text-align: center;
-      font-size: 1.5rem;
-      font-weight: bold;
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-      background-image: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
-      animation: glow 3s ease-in-out infinite alternate;
+      border-radius: 12px;
+      padding: 0.5rem;
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
     }
-    @keyframes glow {
-      from { text-shadow: 0 0 10px #ff6b6b; }
-      to { text-shadow: 0 0 20px #4ecdc4; }
+
+    .url-bar input {
+      padding: 0.5rem;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+      width: 250px;
     }
+
+    .url-bar button {
+      padding: 0.5rem 1rem;
+      background: #ff6b6b;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     @media (max-width: 768px) {
-      .controls-bar {
-        flex-direction: column;
-        align-items: flex-start;
+      .menu-panel {
+        width: 180px;
+        font-size: 0.9rem;
       }
-      .controls-bar input {
-        width: 100%;
+      .url-bar input {
+        width: 160px;
       }
     }
   </style>
 </head>
 <body>
 
-  <div class="player-container">
-    <div class="top-bar">🎬 Toonix TV</div>
-    <div class="video-box">
-      <video id="video" controls></video>
-    </div>
-    <div class="controls-bar">
-      <input type="text" id="videoUrl" placeholder="Enter video or .m3u8 URL" />
-      <button onclick="loadStream()">▶️ Load</button>
-      <select id="speedControl" onchange="changeSpeed()">
+  <div class="player-wrapper">
+    <video id="videoPlayer" controls></video>
+
+    <!-- Three-dot menu button -->
+    <button class="menu-btn" onclick="toggleMenu()">⋮</button>
+
+    <!-- Inside Player Menu -->
+    <div class="menu-panel" id="menuPanel">
+      <select id="speedSelect">
+        <option value="1">Speed: Normal</option>
         <option value="0.5">0.5x</option>
-        <option value="1" selected>Normal</option>
         <option value="1.5">1.5x</option>
         <option value="2">2x</option>
       </select>
-      <button onclick="togglePip()">📺 PiP</button>
+
+      <select id="audioTracks">
+        <option>Audio Track: Default</option>
+      </select>
+
+      <button onclick="togglePip()">📺 Picture-in-Picture</button>
       <button onclick="toggleFullscreen()">⛶ Fullscreen</button>
+      <button onclick="reloadStream()">🔁 Reload</button>
+    </div>
+
+    <!-- URL Input -->
+    <div class="url-bar">
+      <input type="text" id="urlInput" placeholder="Enter video / m3u8 URL" />
+      <button onclick="loadVideo()">▶️ Load</button>
     </div>
   </div>
 
   <script>
-    const video = document.getElementById("video");
-    const videoUrl = document.getElementById("videoUrl");
+    const video = document.getElementById('videoPlayer');
+    const menuPanel = document.getElementById('menuPanel');
+    const speedSelect = document.getElementById('speedSelect');
+    const audioSelect = document.getElementById('audioTracks');
+    const urlInput = document.getElementById('urlInput');
 
-    function loadStream() {
-      const url = videoUrl.value.trim();
+    let hls = null;
+    let currentUrl = '';
+
+    function toggleMenu() {
+      menuPanel.style.display = menuPanel.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    function loadVideo() {
+      const url = urlInput.value.trim();
       if (!url) return;
+      currentUrl = url;
+      audioSelect.innerHTML = `<option>Loading audio...</option>`;
+      if (hls) {
+        hls.destroy();
+        hls = null;
+      }
 
       if (url.endsWith(".m3u8") && Hls.isSupported()) {
-        const hls = new Hls();
+        hls = new Hls();
         hls.loadSource(url);
         hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, function () {
+
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
           video.play();
         });
+
+        hls.on(Hls.Events.AUDIO_TRACKS_UPDATED, (event, data) => {
+          audioSelect.innerHTML = '';
+          data.audioTracks.forEach((track, index) => {
+            const opt = document.createElement('option');
+            opt.value = index;
+            opt.textContent = `Audio ${index + 1} - ${track.name || "Track"}`;
+            audioSelect.appendChild(opt);
+          });
+        });
+
+        audioSelect.addEventListener('change', () => {
+          const selected = parseInt(audioSelect.value);
+          if (!isNaN(selected) && hls) hls.audioTrack = selected;
+        });
+
       } else {
         video.src = url;
         video.play();
@@ -143,9 +213,8 @@
     }
 
     function changeSpeed() {
-      const speed = document.getElementById("speedControl").value;
-      video.playbackRate = parseFloat(speed);
-      localStorage.setItem("playbackSpeed", speed);
+      video.playbackRate = parseFloat(speedSelect.value);
+      localStorage.setItem("toonixSpeed", speedSelect.value);
     }
 
     function toggleFullscreen() {
@@ -159,16 +228,22 @@
     function togglePip() {
       if (document.pictureInPictureElement) {
         document.exitPictureInPicture();
-      } else if (video !== document.pictureInPictureElement) {
-        video.requestPictureInPicture().catch(err => alert("PiP not supported"));
+      } else {
+        video.requestPictureInPicture().catch(() => alert("PiP not supported"));
       }
     }
 
+    function reloadStream() {
+      if (currentUrl) loadVideo();
+    }
+
+    speedSelect.addEventListener('change', changeSpeed);
+
     // Load saved speed
     window.onload = () => {
-      const savedSpeed = localStorage.getItem("playbackSpeed");
+      const savedSpeed = localStorage.getItem("toonixSpeed");
       if (savedSpeed) {
-        document.getElementById("speedControl").value = savedSpeed;
+        speedSelect.value = savedSpeed;
         video.playbackRate = parseFloat(savedSpeed);
       }
     };
