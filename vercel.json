@@ -1,6 +1,7 @@
 {
-  "rewrites": [{ "source": "/", "destination": "/index.html" }],
+  "outputDirectory": "public",
   "cleanUrls": true,
-  "trailingSlash": false,
-  "outputDirectory": "public"
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" }
+  ]
 }
