@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Toonix TV Player - Fixed Audio Option</title>
+  <title>Toonix TV - Final Audio-Safe Player</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/shaka-player.compiled.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.10/dist/hls.min.js"></script>
@@ -126,65 +126,31 @@
   }
 
   function toggleFullscreen() {
-    if (!document.fullscreenElement) {
-      video.requestFullscreen();
-    } else {
-      document.exitFullscreen();
-    }
+    if (!document.fullscreenElement) video.requestFullscreen();
+    else document.exitFullscreen();
   }
 
   function togglePip() {
-    if (document.pictureInPictureElement) {
-      document.exitPictureInPicture();
-    } else {
-      video.requestPictureInPicture();
-    }
+    if (document.pictureInPictureElement) document.exitPictureInPicture();
+    else video.requestPictureInPicture();
   }
 
-  function loadSource() {
-    const url = document.getElementById('urlInput').value.trim();
-    if (!url) return;
-
-    resetTrackMenus();
-    if (player) { player.destroy(); player = null; }
-    if (hls) { hls.destroy(); hls = null; }
-
-    if (url.endsWith(".mpd")) {
-      player = new shaka.Player(video);
-      player.load(url).then(() => {
-        console.log("Shaka Loaded:", url);
-        populateShakaAudioTracks();
-      }).catch(e => {
-        console.error("Shaka Error:", e);
-        fallbackToNative(url);
-      });
-    } else if (url.endsWith(".m3u8") && Hls.isSupported()) {
-      hls = new Hls();
-      hls.loadSource(url);
-      hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        console.log("HLS Loaded:", url);
-        populateHlsAudioTracks();
-        video.play();
-      });
-    } else {
-      fallbackToNative(url);
-    }
+  function resetAudioDropdown(message = 'Loading...') {
+    audioSelect.innerHTML = '';
+    const opt = document.createElement('option');
+    opt.text = message;
+    opt.disabled = true;
+    opt.selected = true;
+    audioSelect.appendChild(opt);
   }
 
-  function fallbackToNative(url) {
-    video.src = url;
-    video.load();
-    video.play();
-    showDefaultAudioMessage();
+  function showDefaultAudioOnly() {
+    resetAudioDropdown('Default audio only');
   }
 
   function populateHlsAudioTracks() {
     audioSelect.innerHTML = '';
-    if (!hls || !hls.audioTracks || hls.audioTracks.length === 0) {
-      showDefaultAudioMessage();
-      return;
-    }
+    if (!hls || !hls.audioTracks || hls.audioTracks.length < 2) return showDefaultAudioOnly();
     hls.audioTracks.forEach((track, i) => {
       const opt = document.createElement('option');
       opt.value = i;
@@ -198,15 +164,8 @@
 
   function populateShakaAudioTracks() {
     audioSelect.innerHTML = '';
-    if (!player) {
-      showDefaultAudioMessage();
-      return;
-    }
     const langs = player.getAudioLanguages();
-    if (langs.length === 0) {
-      showDefaultAudioMessage();
-      return;
-    }
+    if (!langs || langs.length < 2) return showDefaultAudioOnly();
     langs.forEach(lang => {
       const opt = document.createElement('option');
       opt.value = lang;
@@ -218,15 +177,36 @@
     };
   }
 
-  function resetTrackMenus() {
-    audioSelect.innerHTML = '<option disabled selected>Loading audio…</option>';
+  function fallbackToNative(url) {
+    video.src = url;
+    video.load();
+    video.play();
+    showDefaultAudioOnly();
   }
 
-  function showDefaultAudioMessage() {
-    audioSelect.innerHTML = '';
-    const opt = document.createElement('option');
-    opt.textContent = 'Default audio only';
-    audioSelect.appendChild(opt);
+  function loadSource() {
+    const url = document.getElementById('urlInput').value.trim();
+    if (!url) return;
+    if (player) { player.destroy(); player = null; }
+    if (hls) { hls.destroy(); hls = null; }
+    resetAudioDropdown();
+
+    if (url.endsWith('.mpd')) {
+      player = new shaka.Player(video);
+      player.load(url).then(() => {
+        populateShakaAudioTracks();
+      }).catch(() => fallbackToNative(url));
+    } else if (url.endsWith('.m3u8') && Hls.isSupported()) {
+      hls = new Hls();
+      hls.loadSource(url);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        populateHlsAudioTracks();
+        video.play();
+      });
+    } else {
+      fallbackToNative(url);
+    }
   }
 
   speedSelect.onchange = () => {
