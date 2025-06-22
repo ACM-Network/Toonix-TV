@@ -1,0 +1,162 @@
+
+<!-- START OF FIXED AND ENHANCED TOONIX TV HTML -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Toonix TV - Advanced futuristic streaming experience" />
+  <meta name="robots" content="index, follow" />
+  <title>Toonix TV</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.10/hls.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      margin: 0;
+      background: #0f0f23;
+      color: white;
+    }
+    .video-container {
+      text-align: center;
+      padding: 2rem;
+    }
+    .video-player {
+      width: 90%;
+      max-width: 900px;
+      border-radius: 10px;
+      box-shadow: 0 0 40px rgba(0, 255, 255, 0.2);
+    }
+    .controls {
+      margin: 1rem auto;
+      text-align: center;
+    }
+    .status {
+      text-align: center;
+      color: #4ecdc4;
+      margin-top: 1rem;
+    }
+    .loader {
+      border: 6px solid #1a1a1a;
+      border-top: 6px solid #4ecdc4;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: auto;
+      display: none;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <h1 style="text-align:center;">🎬 Toonix TV</h1>
+  <div class="video-container">
+    <input type="file" id="fileInput" accept="video/*,audio/*,.m3u,.m3u8" />
+    <input type="text" id="urlInput" placeholder="Enter video or M3U8 URL" style="width: 80%; padding: 0.5rem;" />
+    <button onclick="loadFromUrl()">Load Stream</button>
+
+    <div class="loader" id="loader"></div>
+    <video id="videoPlayer" class="video-player" controls preload="metadata"></video>
+
+    <div class="controls">
+      <label>Speed:</label>
+      <select id="speedSelect">
+        <option value="0.5">0.5x</option>
+        <option value="1" selected>Normal</option>
+        <option value="1.5">1.5x</option>
+        <option value="2">2x</option>
+      </select>
+    </div>
+    <div class="status" id="status"></div>
+  </div>
+
+  <script>
+    const fileInput = document.getElementById("fileInput");
+    const videoPlayer = document.getElementById("videoPlayer");
+    const speedSelect = document.getElementById("speedSelect");
+    const urlInput = document.getElementById("urlInput");
+    const status = document.getElementById("status");
+    const loader = document.getElementById("loader");
+
+    let hls = null;
+
+    fileInput.addEventListener("change", function () {
+      const file = this.files[0];
+      if (file) {
+        const url = URL.createObjectURL(file);
+        loadVideo(url);
+      }
+    });
+
+    speedSelect.addEventListener("change", function () {
+      const speed = parseFloat(this.value);
+      videoPlayer.playbackRate = speed;
+      localStorage.setItem("toonixSpeed", speed);
+    });
+
+    function loadFromUrl() {
+      const url = urlInput.value.trim();
+      if (url) {
+        loadVideo(url);
+      }
+    }
+
+    function loadVideo(src) {
+      loader.style.display = "block";
+      status.textContent = "Loading...";
+      videoPlayer.style.display = "none";
+
+      if (hls) {
+        hls.destroy();
+        hls = null;
+      }
+
+      const isHLS = src.endsWith(".m3u8");
+      if (isHLS && Hls.isSupported()) {
+        hls = new Hls();
+        hls.loadSource(src);
+        hls.attachMedia(videoPlayer);
+        hls.on(Hls.Events.MANIFEST_PARSED, function () {
+          finalizeLoad();
+        });
+        hls.on(Hls.Events.ERROR, function () {
+          showError("Error loading stream.");
+        });
+      } else {
+        videoPlayer.src = src;
+        videoPlayer.onloadedmetadata = () => {
+          finalizeLoad();
+        };
+        videoPlayer.onerror = () => {
+          showError("Error loading video.");
+        };
+      }
+    }
+
+    function finalizeLoad() {
+      loader.style.display = "none";
+      status.textContent = "Loaded!";
+      videoPlayer.style.display = "block";
+      videoPlayer.playbackRate = parseFloat(localStorage.getItem("toonixSpeed")) || 1;
+    }
+
+    function showError(msg) {
+      loader.style.display = "none";
+      status.textContent = msg;
+    }
+
+    window.onload = () => {
+      const savedSpeed = localStorage.getItem("toonixSpeed");
+      if (savedSpeed) {
+        speedSelect.value = savedSpeed;
+        videoPlayer.playbackRate = parseFloat(savedSpeed);
+      }
+    };
+  </script>
+</body>
+</html>
+<!-- END OF FILE -->
