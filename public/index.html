@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Toonix TV - Smart Combo Player</title>
+  <title>Toonix TV Player - Fixed Audio Option</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/shaka-player.compiled.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.10/dist/hls.min.js"></script>
@@ -176,11 +176,15 @@
     video.src = url;
     video.load();
     video.play();
+    showDefaultAudioMessage();
   }
 
   function populateHlsAudioTracks() {
-    if (!hls || !hls.audioTracks) return;
     audioSelect.innerHTML = '';
+    if (!hls || !hls.audioTracks || hls.audioTracks.length === 0) {
+      showDefaultAudioMessage();
+      return;
+    }
     hls.audioTracks.forEach((track, i) => {
       const opt = document.createElement('option');
       opt.value = i;
@@ -193,9 +197,16 @@
   }
 
   function populateShakaAudioTracks() {
-    if (!player) return;
-    const langs = player.getAudioLanguages();
     audioSelect.innerHTML = '';
+    if (!player) {
+      showDefaultAudioMessage();
+      return;
+    }
+    const langs = player.getAudioLanguages();
+    if (langs.length === 0) {
+      showDefaultAudioMessage();
+      return;
+    }
     langs.forEach(lang => {
       const opt = document.createElement('option');
       opt.value = lang;
@@ -208,7 +219,14 @@
   }
 
   function resetTrackMenus() {
-    audioSelect.innerHTML = '<option>Loading...</option>';
+    audioSelect.innerHTML = '<option disabled selected>Loading audio…</option>';
+  }
+
+  function showDefaultAudioMessage() {
+    audioSelect.innerHTML = '';
+    const opt = document.createElement('option');
+    opt.textContent = 'Default audio only';
+    audioSelect.appendChild(opt);
   }
 
   speedSelect.onchange = () => {
