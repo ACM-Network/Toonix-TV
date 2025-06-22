@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Toonix TV Smart Player</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>Toonix TV - Smart Combo Player</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/shaka-player.compiled.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.10/dist/hls.min.js"></script>
   <style>
     body {
       margin: 0;
@@ -95,8 +96,6 @@
 
   <div class="menu-panel" id="menuPanel">
     <select id="audioSelect"><option>Audio</option></select>
-    <select id="qualitySelect"><option>Quality</option></select>
-    <select id="subSelect"><option>Subtitles</option></select>
     <select id="speedSelect">
       <option value="0.5">0.5x</option>
       <option value="1" selected>Normal</option>
@@ -109,18 +108,17 @@
 
   <div class="controls">
     <input type="file" id="fileInput" accept="video/*" />
-    <input type="text" id="urlInput" placeholder="Paste any stream or video URL..." />
+    <input type="text" id="urlInput" placeholder="Paste any stream/video URL..." />
     <button onclick="loadSource()">▶️ Load</button>
   </div>
 </div>
 
 <script>
-  let player = null;
   const video = document.getElementById('video');
   const audioSelect = document.getElementById('audioSelect');
-  const qualitySelect = document.getElementById('qualitySelect');
-  const subSelect = document.getElementById('subSelect');
   const speedSelect = document.getElementById('speedSelect');
+  let player = null;
+  let hls = null;
 
   function toggleMenu() {
     const menu = document.getElementById('menuPanel');
@@ -147,42 +145,58 @@
     const url = document.getElementById('urlInput').value.trim();
     if (!url) return;
 
-    if (player) player.destroy();
+    resetTrackMenus();
+    if (player) { player.destroy(); player = null; }
+    if (hls) { hls.destroy(); hls = null; }
 
-    const isShaka = url.endsWith(".mpd") || url.includes(".m3u8");
-
-    if (isShaka) {
+    if (url.endsWith(".mpd")) {
       player = new shaka.Player(video);
       player.load(url).then(() => {
-        populateTracks();
-        console.log('Shaka loaded:', url);
+        console.log("Shaka Loaded:", url);
+        populateShakaAudioTracks();
       }).catch(e => {
-        console.error('Shaka error:', e);
-        fallbackToVideo(url);
+        console.error("Shaka Error:", e);
+        fallbackToNative(url);
+      });
+    } else if (url.endsWith(".m3u8") && Hls.isSupported()) {
+      hls = new Hls();
+      hls.loadSource(url);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        console.log("HLS Loaded:", url);
+        populateHlsAudioTracks();
+        video.play();
       });
     } else {
-      fallbackToVideo(url);
+      fallbackToNative(url);
     }
   }
 
-  function fallbackToVideo(url) {
+  function fallbackToNative(url) {
     video.src = url;
     video.load();
     video.play();
-    resetTrackMenus();
   }
 
-  function resetTrackMenus() {
-    audioSelect.innerHTML = '<option>No Audio Option</option>';
-    qualitySelect.innerHTML = '<option>No Quality Option</option>';
-    subSelect.innerHTML = '<option>No Subtitles</option>';
-  }
-
-  function populateTracks() {
-    // Audio
-    const audioLangs = player.getAudioLanguages();
+  function populateHlsAudioTracks() {
+    if (!hls || !hls.audioTracks) return;
     audioSelect.innerHTML = '';
-    audioLangs.forEach(lang => {
+    hls.audioTracks.forEach((track, i) => {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = track.name || `Audio ${i + 1}`;
+      audioSelect.appendChild(opt);
+    });
+    audioSelect.onchange = () => {
+      hls.audioTrack = parseInt(audioSelect.value);
+    };
+  }
+
+  function populateShakaAudioTracks() {
+    if (!player) return;
+    const langs = player.getAudioLanguages();
+    audioSelect.innerHTML = '';
+    langs.forEach(lang => {
       const opt = document.createElement('option');
       opt.value = lang;
       opt.textContent = lang;
@@ -191,39 +205,10 @@
     audioSelect.onchange = () => {
       player.selectAudioLanguage(audioSelect.value);
     };
+  }
 
-    // Quality
-    const tracks = player.getVariantTracks();
-    qualitySelect.innerHTML = '';
-    tracks.forEach(track => {
-      const opt = document.createElement('option');
-      opt.value = track.id;
-      opt.textContent = `${track.height}p - ${track.bandwidth / 1000} kbps`;
-      qualitySelect.appendChild(opt);
-    });
-    qualitySelect.onchange = () => {
-      const id = parseInt(qualitySelect.value);
-      const track = tracks.find(t => t.id === id);
-      if (track) player.selectVariantTrack(track, true);
-    };
-
-    // Subtitles
-    const textTracks = player.getTextTracks();
-    subSelect.innerHTML = '<option value="">Off</option>';
-    textTracks.forEach(track => {
-      const opt = document.createElement('option');
-      opt.value = track.language;
-      opt.textContent = track.language;
-      subSelect.appendChild(opt);
-    });
-    subSelect.onchange = () => {
-      if (subSelect.value) {
-        player.setTextTrackVisibility(true);
-        player.selectTextLanguage(subSelect.value);
-      } else {
-        player.setTextTrackVisibility(false);
-      }
-    };
+  function resetTrackMenus() {
+    audioSelect.innerHTML = '<option>Loading...</option>';
   }
 
   speedSelect.onchange = () => {
@@ -234,14 +219,11 @@
     const file = this.files[0];
     if (file) {
       const url = URL.createObjectURL(file);
-      fallbackToVideo(url);
+      fallbackToNative(url);
     }
   });
 
   shaka.polyfill.installAll();
-  if (!shaka.Player.isBrowserSupported()) {
-    alert("Shaka Player not supported in this browser.");
-  }
 </script>
 
 </body>
