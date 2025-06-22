@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Toonix TV Player</title>
+  <title>Toonix TV</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.10/hls.min.js"></script>
   <style>
     body {
-      background: linear-gradient(135deg, #0f0f23, #1a1a2e);
-      font-family: 'Segoe UI', sans-serif;
       margin: 0;
-      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0f0f23, #1a1a2e);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -18,12 +17,12 @@
     }
 
     .player-wrapper {
-      position: relative;
-      width: 90%;
+      width: 95%;
       max-width: 960px;
+      position: relative;
       border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 0 30px rgba(78, 205, 196, 0.2);
+      box-shadow: 0 0 30px rgba(78, 205, 196, 0.3);
     }
 
     video {
@@ -35,31 +34,30 @@
 
     .menu-btn {
       position: absolute;
-      top: 10px;
-      right: 10px;
-      background: rgba(0,0,0,0.7);
+      top: 12px;
+      right: 12px;
+      background: rgba(0, 0, 0, 0.8);
       border: none;
+      font-size: 22px;
       color: white;
-      font-size: 20px;
-      padding: 0.3rem 0.6rem;
-      border-radius: 8px;
+      border-radius: 6px;
+      padding: 5px 10px;
       cursor: pointer;
       z-index: 10;
     }
 
     .menu-panel {
+      display: none;
       position: absolute;
       top: 50px;
-      right: 10px;
+      right: 12px;
       background: rgba(0, 0, 0, 0.85);
-      color: white;
       border-radius: 10px;
-      padding: 0.8rem;
-      width: 220px;
-      display: none;
+      padding: 12px;
+      z-index: 10;
       flex-direction: column;
       gap: 10px;
-      z-index: 10;
+      width: 220px;
       animation: fadeIn 0.3s ease;
     }
 
@@ -74,39 +72,46 @@
       cursor: pointer;
     }
 
-    .menu-panel button:hover,
-    .menu-panel select:hover {
+    .menu-panel select:hover,
+    .menu-panel button:hover {
       background: #38bcb2;
     }
 
-    .url-bar {
+    .input-panel {
       position: absolute;
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
       background: rgba(0, 0, 0, 0.6);
+      padding: 10px;
       border-radius: 12px;
-      padding: 0.5rem;
       display: flex;
-      gap: 0.5rem;
+      flex-wrap: wrap;
+      gap: 10px;
       align-items: center;
+      justify-content: center;
     }
 
-    .url-bar input {
-      padding: 0.5rem;
-      border: none;
+    .input-panel input[type="file"],
+    .input-panel input[type="text"] {
+      padding: 8px;
       border-radius: 8px;
+      border: none;
       outline: none;
-      width: 250px;
     }
 
-    .url-bar button {
-      padding: 0.5rem 1rem;
+    .input-panel button {
+      padding: 8px 14px;
       background: #ff6b6b;
       border: none;
       border-radius: 8px;
       color: white;
       cursor: pointer;
+      font-weight: bold;
+    }
+
+    .input-panel button:hover {
+      background: #e74c3c;
     }
 
     @keyframes fadeIn {
@@ -119,8 +124,9 @@
         width: 180px;
         font-size: 0.9rem;
       }
-      .url-bar input {
-        width: 160px;
+      .input-panel {
+        flex-direction: column;
+        bottom: 10px;
       }
     }
   </style>
@@ -130,10 +136,10 @@
   <div class="player-wrapper">
     <video id="videoPlayer" controls></video>
 
-    <!-- Three-dot menu button -->
+    <!-- Floating 3-dot menu button -->
     <button class="menu-btn" onclick="toggleMenu()">⋮</button>
 
-    <!-- Inside Player Menu -->
+    <!-- Floating player settings menu -->
     <div class="menu-panel" id="menuPanel">
       <select id="speedSelect">
         <option value="1">Speed: Normal</option>
@@ -143,30 +149,32 @@
       </select>
 
       <select id="audioTracks">
-        <option>Audio Track: Default</option>
+        <option value="">Audio Track: Default</option>
       </select>
 
-      <button onclick="togglePip()">📺 Picture-in-Picture</button>
+      <button onclick="togglePip()">📺 PiP</button>
       <button onclick="toggleFullscreen()">⛶ Fullscreen</button>
       <button onclick="reloadStream()">🔁 Reload</button>
     </div>
 
-    <!-- URL Input -->
-    <div class="url-bar">
-      <input type="text" id="urlInput" placeholder="Enter video / m3u8 URL" />
+    <!-- URL and file upload -->
+    <div class="input-panel">
+      <input type="file" id="fileInput" accept="video/*,audio/*" />
+      <input type="text" id="urlInput" placeholder="Enter stream URL (.m3u8, mp4...)" />
       <button onclick="loadVideo()">▶️ Load</button>
     </div>
   </div>
 
   <script>
-    const video = document.getElementById('videoPlayer');
-    const menuPanel = document.getElementById('menuPanel');
-    const speedSelect = document.getElementById('speedSelect');
-    const audioSelect = document.getElementById('audioTracks');
-    const urlInput = document.getElementById('urlInput');
+    const video = document.getElementById("videoPlayer");
+    const speedSelect = document.getElementById("speedSelect");
+    const audioTracks = document.getElementById("audioTracks");
+    const fileInput = document.getElementById("fileInput");
+    const urlInput = document.getElementById("urlInput");
+    const menuPanel = document.getElementById("menuPanel");
 
     let hls = null;
-    let currentUrl = '';
+    let currentSource = '';
 
     function toggleMenu() {
       menuPanel.style.display = menuPanel.style.display === 'flex' ? 'none' : 'flex';
@@ -175,8 +183,8 @@
     function loadVideo() {
       const url = urlInput.value.trim();
       if (!url) return;
-      currentUrl = url;
-      audioSelect.innerHTML = `<option>Loading audio...</option>`;
+      currentSource = url;
+      audioTracks.innerHTML = `<option>Loading audio...</option>`;
       if (hls) {
         hls.destroy();
         hls = null;
@@ -186,24 +194,21 @@
         hls = new Hls();
         hls.loadSource(url);
         hls.attachMedia(video);
-
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          video.play();
-        });
+        hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
 
         hls.on(Hls.Events.AUDIO_TRACKS_UPDATED, (event, data) => {
-          audioSelect.innerHTML = '';
+          audioTracks.innerHTML = '';
           data.audioTracks.forEach((track, index) => {
             const opt = document.createElement('option');
             opt.value = index;
             opt.textContent = `Audio ${index + 1} - ${track.name || "Track"}`;
-            audioSelect.appendChild(opt);
+            audioTracks.appendChild(opt);
           });
         });
 
-        audioSelect.addEventListener('change', () => {
-          const selected = parseInt(audioSelect.value);
-          if (!isNaN(selected) && hls) hls.audioTrack = selected;
+        audioTracks.addEventListener("change", () => {
+          const val = parseInt(audioTracks.value);
+          if (!isNaN(val)) hls.audioTrack = val;
         });
 
       } else {
@@ -212,14 +217,19 @@
       }
     }
 
+    function reloadStream() {
+      if (currentSource) loadVideo();
+    }
+
     function changeSpeed() {
-      video.playbackRate = parseFloat(speedSelect.value);
-      localStorage.setItem("toonixSpeed", speedSelect.value);
+      const speed = parseFloat(speedSelect.value);
+      video.playbackRate = speed;
+      localStorage.setItem("toonixSpeed", speed);
     }
 
     function toggleFullscreen() {
       if (!document.fullscreenElement) {
-        video.requestFullscreen().catch(err => alert("Fullscreen failed"));
+        video.requestFullscreen().catch(() => alert("Fullscreen failed"));
       } else {
         document.exitFullscreen();
       }
@@ -233,13 +243,18 @@
       }
     }
 
-    function reloadStream() {
-      if (currentUrl) loadVideo();
-    }
+    // File upload handler
+    fileInput.addEventListener("change", function () {
+      const file = this.files[0];
+      if (file) {
+        const url = URL.createObjectURL(file);
+        video.src = url;
+        video.play();
+        hls?.destroy();
+      }
+    });
 
-    speedSelect.addEventListener('change', changeSpeed);
-
-    // Load saved speed
+    // Restore saved speed
     window.onload = () => {
       const savedSpeed = localStorage.getItem("toonixSpeed");
       if (savedSpeed) {
@@ -247,7 +262,8 @@
         video.playbackRate = parseFloat(savedSpeed);
       }
     };
-  </script>
 
+    speedSelect.addEventListener("change", changeSpeed);
+  </script>
 </body>
 </html>
