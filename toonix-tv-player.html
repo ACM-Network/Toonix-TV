@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toonix TV - Premium Streaming Experience</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.10/hls.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid rgba(255, 107, 107, 0.3);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 10px rgba(255, 107, 107, 0.3)); }
+            to { filter: drop-shadow(0 0 20px rgba(78, 205, 196, 0.5)); }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 107, 107, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-links a:hover::before {
+            left: 100%;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 120px 2rem 2rem;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 2rem;
+        }
+
+        .player-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(255, 107, 107, 0.5);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area:hover {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .upload-area::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(transparent, rgba(255, 107, 107, 0.1), transparent);
+            animation: rotate 4s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-btn, .url-btn {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-btn:hover, .url-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
+        }
+
+        .upload-btn::before, .url-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        .upload-btn:hover::before, .url-btn:hover::before {
+            left: 100%;
+        }
+
+        .url-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            margin: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .url-input:focus {
+            outline: none;
+            border-color: #4ecdc4;
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.3);
+        }
+
+        .url-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .video-container {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .video-player {
+            width: 100%;
+            max-height: 70vh;
+            border-radius: 15px;
+            display: none;
+        }
+
+        .controls {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 1rem;
+            border-radius: 15px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .control-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-label {
+            font-weight: bold;
+            color: #4ecdc4;
+            min-width: 120px;
+        }
+
+        select, .quality-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            color: white;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        select:hover, .quality-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #4ecdc4;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 10px rgba(255, 107, 107, 0.3);
+        }
+
+        .quality-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .quality-btn {
+            background: rgba(78, 205, 196, 0.2);
+            border: 1px solid #4ecdc4;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .quality-btn:hover, .quality-btn.active {
+            background: #4ecdc4;
+            color: #0f0f23;
+            transform: translateY(-2px);
+        }
+
+        .info-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            border-left: 4px solid #4ecdc4;
+        }
+
+        .info-title {
+            color: #ff6b6b;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(255, 107, 107, 0.2);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .feature-card:hover::before {
+            transform: translateX(0);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .status {
+            position: fixed;
+            top: 120px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            display: none;
+            z-index: 1001;
+            border-left: 4px solid #4ecdc4;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .container {
+                padding: 100px 1rem 1rem;
+            }
+            
+            .control-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .quality-buttons {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">🎬 Toonix TV</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#player">Player</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <section class="hero" id="home">
+            <h1>Toonix TV</h1>
+            <p>Experience the ultimate streaming platform with multi-format support and crystal-clear quality</p>
+        </section>
+
+        <section class="player-section" id="player">
+            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <h3>🎥 Upload Video File</h3>
+                <p>Supports MP4, MKV, AVI, MOV, WebM and more!</p>
+                <input type="file" id="fileInput" class="file-input" accept="video/*,audio/*,.m3u,.m3u8">
+                <button class="upload-btn">Choose File</button>
+            </div>
+
+            <div style="text-align: center; margin: 2rem 0;">
+                <h3>🌐 Or Stream from URL</h3>
+                <input type="text" class="url-input" id="urlInput" placeholder="Enter M3U8, MP4, or any video URL...">
+                <button class="url-btn" onclick="loadFromUrl()">Load Stream</button>
+            </div>
+
+            <div class="video-container">
+                <video id="videoPlayer" class="video-player" controls preload="metadata">
+                    <p>Your browser doesn't support HTML5 video.</p>
+                </video>
+            </div>
+
+            <div class="controls" id="controls">
+                <div class="control-group">
+                    <span class="control-label">🎵 Audio Track:</span>
+                    <select id="audioSelect">
+                        <option value="">Default Audio</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <span class="control-label">🎬 Subtitle Track:</span>
+                    <select id="subtitleSelect">
+                        <option value="">No Subtitles</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <span class="control-label">⚡ Quality:</span>
+                    <div class="quality-buttons" id="qualityButtons">
+                        <button class="quality-btn" data-quality="auto">Auto</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <span class="control-label">🔧 Playback Speed:</span>
+                    <select id="speedSelect">
+                        <option value="0.5">0.5x</option>
+                        <option value="0.75">0.75x</option>
+                        <option value="1" selected>Normal</option>
+                        <option value="1.25">1.25x</option>
+                        <option value="1.5">1.5x</option>
+                        <option value="2">2x</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="info-panel" id="videoInfo" style="display: none;">
+                <h3>📊 Video Information</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-title">Format</div>
+                        <div id="formatInfo">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-title">Resolution</div>
+                        <div id="resolutionInfo">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-title">Duration</div>
+                        <div id="durationInfo">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-title">File Size</div>
+                        <div id="sizeInfo">-</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features" id="features">
+            <div class="feature-card">
+                <div class="feature-icon">🎬</div>
+                <h3>Multi-Format Support</h3>
+                <p>Play MP4, MKV, AVI, MOV, WebM, M3U8, M3U and more formats seamlessly</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎵</div>
+                <h3>Multi-Audio Tracks</h3>
+                <p>Switch between different audio languages and tracks on the fly</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📺</div>
+                <h3>Adaptive Streaming</h3>
+                <p>Automatic quality adjustment based on your connection speed</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🚀</div>
+                <h3>Lightning Fast</h3>
+                <p>Optimized player for smooth playback and minimal buffering</p>
+            </div>
+        </section>
+    </div>
+
+    <div class="status" id="status"></div>
+
+    <script>
+        const videoPlayer = document.getElementById('videoPlayer');
+        const fileInput = document.getElementById('fileInput');
+        const urlInput = document.getElementById('urlInput');
+        const controls = document.getElementById('controls');
+        const audioSelect = document.getElementById('audioSelect');
+        const subtitleSelect = document.getElementById('subtitleSelect');
+        const speedSelect = document.getElementById('speedSelect');
+        const qualityButtons = document.getElementById('qualityButtons');
+        const videoInfo = document.getElementById('videoInfo');
+        const status = document.getElementById('status');
+
+        let hls = null;
+        let currentVideoFile = null;
+
+        // Show status message
+        function showStatus(message, type = 'info') {
+            status.textContent = message;
+            status.style.display = 'block';
+            status.style.borderLeftColor = type === 'error' ? '#ff6b6b' : '#4ecdc4';
+            setTimeout(() => {
+                status.style.display = 'none';
+            }, 3000);
+        }
+
+        // Handle file upload
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                currentVideoFile = file;
+                const url = URL.createObjectURL(file);
+                loadVideo(url, file.name);
+                updateVideoInfo(file);
+            }
+        });
+
+        // Load video from URL
+        function loadFromUrl() {
+            const url = urlInput.value.trim();
+            if (url) {
+                loadVideo(url, 'Stream');
+                showStatus('Loading video stream...', 'info');
+            } else {
+                showStatus('Please enter a valid URL', 'error');
+            }
+        }
+
+        // Load video with format detection
+        function loadVideo(src, title) {
+            // Clean up previous HLS instance
+            if (hls) {
+                hls.destroy();
+                hls = null;
+            }
+
+            const isHLS = src.includes('.m3u8') || src.includes('.m3u');
+            
+            if (isHLS && Hls.isSupported()) {
+                hls = new Hls({
+                    debug: false,
+                    enableWorker: true,
+                    lowLatencyMode: true,
+                    backBufferLength: 90
+                });
+                
+                hls.loadSource(src);
+                hls.attachMedia(videoPlayer);
+                
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    videoPlayer.style.display = 'block';
+                    controls.style.display = 'block';
+                    videoInfo.style.display = 'block';
+                    showStatus('HLS stream loaded successfully!', 'info');
+                    setupHLSControls();
+                });
+
+                hls.on(Hls.Events.ERROR, function(event, data) {
+                    if (data.fatal) {
+                        showStatus('Error loading HLS stream: ' + data.details, 'error');
+                    }
+                });
+            } else if (videoPlayer.canPlayType && isVideoSupported(src)) {
+                videoPlayer.src = src;
+                videoPlayer.style.display = 'block';
+                controls.style.display = 'block';
+                videoInfo.style.display = 'block';
+                showStatus('Video loaded successfully!', 'info');
+                setupRegularControls();
+            } else {
+                showStatus('Video format not supported or HLS.js not available', 'error');
+            }
+        }
+
+        // Check if video format is supported
+        function isVideoSupported(src) {
+            const ext = src.split('.').pop().toLowerCase();
+            const supportedFormats = ['mp4', 'webm', 'ogg', 'mov', 'avi', 'mkv'];
+            return supportedFormats.includes(ext);
+        }
+
+        // Setup HLS-specific controls
+        function setupHLSControls() {
+            if (!hls) return;
+
+            // Quality levels
+            const levels = hls.levels;
+            qualityButtons.innerHTML = '<button class="quality-btn active" data-quality="-1">Auto</button>';
+            
+            levels.forEach((level, index) => {
+                const button = document.createElement('button');
+                button.className = 'quality-btn';
+                button.setAttribute('data-quality', index);
+                button.textContent = `${level.height}p`;
+                button.onclick = () => setQuality(index);
+                qualityButtons.appendChild(button);
+            });
+
+            // Audio tracks
+            hls.on(Hls.Events.AUDIO_TRACKS_UPDATED, function() {
+                const audioTracks = hls.audioTracks;
+                audioSelect.innerHTML = '<option value="">Default Audio</option>';
+                
+                audioTracks.forEach((track, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = track.name || `Audio ${index + 1}`;
+                    audioSelect.appendChild(option);
+                });
+            });
+
+            // Subtitle tracks
+            hls.on(Hls.Events.SUBTITLE_TRACKS_UPDATED, function() {
+                const subtitleTracks = hls.subtitleTracks;
+                subtitleSelect.innerHTML = '<option value="">No Subtitles</option>';
+                
+                subtitleTracks.forEach((track, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = track.name || `Subtitle ${index + 1}`;
+                    subtitleSelect.appendChild(option);
+                });
+            });
+        }
+
+        // Setup regular video controls
+        function setupRegularControls() {
+            // Check for multiple audio tracks (limited browser support)
+            if (videoPlayer.audioTracks && videoPlayer.audioTracks.length > 1) {
+                audioSelect.innerHTML = '<option value="">Default Audio</option>';
+                for (let i = 0; i < videoPlayer.audioTracks.length; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = videoPlayer.audioTracks[i].label || `Audio ${i + 1}`;
+                    audioSelect.appendChild(option);
+                }
+            }
+
+            // Check for text tracks (subtitles)
+            if (videoPlayer.textTracks && videoPlayer.textTracks.length > 0) {
+                subtitleSelect.innerHTML = '<option value="">No Subtitles</option>';
+                for (let i = 0; i < videoPlayer.textTracks.length; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = videoPlayer.textTracks[i].label || `Subtitle ${i + 1}`;
+                    subtitleSelect.appendChild(option);
+                }
+            }
+        }
+
+        // Set quality for HLS
+        function setQuality(level) {
+            if (hls) {
+                hls.currentLevel = level;
+                document.querySelectorAll('.quality-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelector(`[data-quality="${level}"]`).classList.add('active');
+            }
+        }
+
+        // Audio track selection
+        audioSelect.addEventListener('change', function() {
+            const trackIndex = parseInt(this.value);
+            if (hls && !isNaN(trackIndex)) {
+                hls.audioTrack = trackIndex;
+            } else if (videoPlayer.audioTracks && !isNaN(trackIndex)) {
+                for (let i = 0; i < videoPlayer.audioTracks.length; i++) {
+                    videoPlayer.audioTracks[i].enabled = i === trackIndex;
+                }
+            }
+        });
+
+        // Subtitle track selection
+        subtitleSelect.addEventListener('change', function() {
+            const trackIndex = parseInt(this.value);
+            if (hls && !isNaN(trackIndex)) {
+                hls.subtitleTrack = trackIndex;
+            } else if (videoPlayer.textTracks) {
+                for (let i = 0; i < videoPlayer.textTracks.length; i++) {
+                    videoPlayer.textTracks[i].mode = i === trackIndex ? 'showing' : 'hidden';
+                }
+            }
+        });
+
+        // Playback speed control
+        speedSelect.addEventListener('change', function() {
+            videoPlayer.playbackRate = parseFloat(this.value);
+        });
+
+        // Update video information
+        function updateVideoInfo(file) {
+            if (file) {
+                document.getElementById('formatInfo').textContent = file.type || 'Unknown';
+                document.getElementById('sizeInfo').textContent = formatFileSize(file.size);
+            }
+        }
+
+        // Video metadata loaded
+        videoPlayer.addEventListener('loadedmetadata', function() {
+            document.getElementById('resolutionInfo').textContent = `${videoPlayer.videoWidth} × ${videoPlayer.videoHeight}`;
+            document.getElementById('durationInfo').textContent = formatDuration(videoPlayer.duration);
+        });
+
+        // Utility functions
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function formatDuration(seconds) {
+            const hrs = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            const secs = Math.floor(seconds % 60);
+            if (hrs > 0) {
+                return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // URL input enter key support
+        urlInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                loadFromUrl();
+            }
+        });
+
+        // Initialize with sample content
+        showStatus('Welcome to Toonix TV! Upload a video or enter a stream URL to get started.', 'info');
+    </script>
+</body>
+</html>
