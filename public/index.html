@@ -1,162 +1,178 @@
-
-<!-- START OF FIXED AND ENHANCED TOONIX TV HTML -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Toonix TV - Advanced futuristic streaming experience" />
-  <meta name="robots" content="index, follow" />
   <title>Toonix TV</title>
   <link rel="icon" type="image/png" href="favicon.png" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.10/hls.min.js"></script>
   <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, sans-serif;
+    * {
+      box-sizing: border-box;
       margin: 0;
-      background: #0f0f23;
-      color: white;
+      padding: 0;
     }
-    .video-container {
-      text-align: center;
+    body {
+      background: linear-gradient(135deg, #0f0f23, #1a1a2e);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       padding: 2rem;
     }
-    .video-player {
-      width: 90%;
-      max-width: 900px;
-      border-radius: 10px;
-      box-shadow: 0 0 40px rgba(0, 255, 255, 0.2);
+    .player-container {
+      width: 100%;
+      max-width: 960px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 0 60px rgba(78, 205, 196, 0.2);
+      backdrop-filter: blur(10px);
     }
-    .controls {
-      margin: 1rem auto;
+    .video-box {
+      position: relative;
+      width: 100%;
+    }
+    video {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: black;
+    }
+    .controls-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.7);
+    }
+    .controls-bar select,
+    .controls-bar button {
+      padding: 0.5rem 1rem;
+      background: #4ecdc4;
+      border: none;
+      border-radius: 8px;
+      color: #0f0f23;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .controls-bar button:hover,
+    .controls-bar select:hover {
+      background: #38bcb2;
+    }
+    .controls-bar input {
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      width: 60%;
+      margin: 0.5rem 0;
+    }
+    .top-bar {
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.6);
       text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      background-image: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+      animation: glow 3s ease-in-out infinite alternate;
     }
-    .status {
-      text-align: center;
-      color: #4ecdc4;
-      margin-top: 1rem;
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #ff6b6b; }
+      to { text-shadow: 0 0 20px #4ecdc4; }
     }
-    .loader {
-      border: 6px solid #1a1a1a;
-      border-top: 6px solid #4ecdc4;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-      margin: auto;
-      display: none;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    @media (max-width: 768px) {
+      .controls-bar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .controls-bar input {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
-  <h1 style="text-align:center;">🎬 Toonix TV</h1>
-  <div class="video-container">
-    <input type="file" id="fileInput" accept="video/*,audio/*,.m3u,.m3u8" />
-    <input type="text" id="urlInput" placeholder="Enter video or M3U8 URL" style="width: 80%; padding: 0.5rem;" />
-    <button onclick="loadFromUrl()">Load Stream</button>
 
-    <div class="loader" id="loader"></div>
-    <video id="videoPlayer" class="video-player" controls preload="metadata"></video>
-
-    <div class="controls">
-      <label>Speed:</label>
-      <select id="speedSelect">
+  <div class="player-container">
+    <div class="top-bar">🎬 Toonix TV</div>
+    <div class="video-box">
+      <video id="video" controls></video>
+    </div>
+    <div class="controls-bar">
+      <input type="text" id="videoUrl" placeholder="Enter video or .m3u8 URL" />
+      <button onclick="loadStream()">▶️ Load</button>
+      <select id="speedControl" onchange="changeSpeed()">
         <option value="0.5">0.5x</option>
         <option value="1" selected>Normal</option>
         <option value="1.5">1.5x</option>
         <option value="2">2x</option>
       </select>
+      <button onclick="togglePip()">📺 PiP</button>
+      <button onclick="toggleFullscreen()">⛶ Fullscreen</button>
     </div>
-    <div class="status" id="status"></div>
   </div>
 
   <script>
-    const fileInput = document.getElementById("fileInput");
-    const videoPlayer = document.getElementById("videoPlayer");
-    const speedSelect = document.getElementById("speedSelect");
-    const urlInput = document.getElementById("urlInput");
-    const status = document.getElementById("status");
-    const loader = document.getElementById("loader");
+    const video = document.getElementById("video");
+    const videoUrl = document.getElementById("videoUrl");
 
-    let hls = null;
+    function loadStream() {
+      const url = videoUrl.value.trim();
+      if (!url) return;
 
-    fileInput.addEventListener("change", function () {
-      const file = this.files[0];
-      if (file) {
-        const url = URL.createObjectURL(file);
-        loadVideo(url);
-      }
-    });
-
-    speedSelect.addEventListener("change", function () {
-      const speed = parseFloat(this.value);
-      videoPlayer.playbackRate = speed;
-      localStorage.setItem("toonixSpeed", speed);
-    });
-
-    function loadFromUrl() {
-      const url = urlInput.value.trim();
-      if (url) {
-        loadVideo(url);
-      }
-    }
-
-    function loadVideo(src) {
-      loader.style.display = "block";
-      status.textContent = "Loading...";
-      videoPlayer.style.display = "none";
-
-      if (hls) {
-        hls.destroy();
-        hls = null;
-      }
-
-      const isHLS = src.endsWith(".m3u8");
-      if (isHLS && Hls.isSupported()) {
-        hls = new Hls();
-        hls.loadSource(src);
-        hls.attachMedia(videoPlayer);
+      if (url.endsWith(".m3u8") && Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(url);
+        hls.attachMedia(video);
         hls.on(Hls.Events.MANIFEST_PARSED, function () {
-          finalizeLoad();
-        });
-        hls.on(Hls.Events.ERROR, function () {
-          showError("Error loading stream.");
+          video.play();
         });
       } else {
-        videoPlayer.src = src;
-        videoPlayer.onloadedmetadata = () => {
-          finalizeLoad();
-        };
-        videoPlayer.onerror = () => {
-          showError("Error loading video.");
-        };
+        video.src = url;
+        video.play();
       }
     }
 
-    function finalizeLoad() {
-      loader.style.display = "none";
-      status.textContent = "Loaded!";
-      videoPlayer.style.display = "block";
-      videoPlayer.playbackRate = parseFloat(localStorage.getItem("toonixSpeed")) || 1;
+    function changeSpeed() {
+      const speed = document.getElementById("speedControl").value;
+      video.playbackRate = parseFloat(speed);
+      localStorage.setItem("playbackSpeed", speed);
     }
 
-    function showError(msg) {
-      loader.style.display = "none";
-      status.textContent = msg;
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        video.requestFullscreen().catch(err => alert("Fullscreen failed"));
+      } else {
+        document.exitFullscreen();
+      }
     }
 
+    function togglePip() {
+      if (document.pictureInPictureElement) {
+        document.exitPictureInPicture();
+      } else if (video !== document.pictureInPictureElement) {
+        video.requestPictureInPicture().catch(err => alert("PiP not supported"));
+      }
+    }
+
+    // Load saved speed
     window.onload = () => {
-      const savedSpeed = localStorage.getItem("toonixSpeed");
+      const savedSpeed = localStorage.getItem("playbackSpeed");
       if (savedSpeed) {
-        speedSelect.value = savedSpeed;
-        videoPlayer.playbackRate = parseFloat(savedSpeed);
+        document.getElementById("speedControl").value = savedSpeed;
+        video.playbackRate = parseFloat(savedSpeed);
       }
     };
   </script>
+
 </body>
 </html>
-<!-- END OF FILE -->
