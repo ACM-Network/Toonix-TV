@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import dynamic from "next/dynamic";
 
-const VideoPlayer = dynamic(() => import("../components/VideoPlayer"), {
+const VideoPlayer = dynamic(() => import("../video-streamer/components/VideoPlayer"), {
   ssr: false,
 });
 
 const getMimeType = (url) => {
+  if (!url) return "";
   if (url.endsWith(".m3u8")) return "application/x-mpegURL";
   if (url.endsWith(".mpd")) return "application/dash+xml";
   if (url.endsWith(".mp4")) return "video/mp4";
@@ -17,48 +18,51 @@ const getMimeType = (url) => {
 };
 
 export default function Home() {
-  const [videoURL, setVideoURL] = useState("");
-  const [localUrl, setLocalUrl] = useState("");
-  const [videoType, setVideoType] = useState("");
+  const [url, setUrl] = useState("");
+  const [currentSrc, setCurrentSrc] = useState("");
+  const [currentType, setCurrentType] = useState("");
 
-  const handleURL = (e) => {
-    setVideoURL(e.target.value);
-    setVideoType(getMimeType(e.target.value));
-    setLocalUrl("");
+  const handlePlayUrl = () => {
+    setCurrentSrc(url);
+    setCurrentType(getMimeType(url));
   };
 
   const handleFile = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setLocalUrl(URL.createObjectURL(file));
-      setVideoType(file.type);
-      setVideoURL("");
-    }
+    const f = e.target.files?.[0];
+    if (!f) return;
+    const blobUrl = URL.createObjectURL(f);
+    setCurrentSrc(blobUrl);
+    setCurrentType(f.type || "");
   };
 
-  const currentSrc = videoURL || localUrl;
-  const currentType = videoType;
-
   return (
-    <div style={{ maxWidth: "800px", margin: "2rem auto", textAlign: "center" }}>
-      <h2>🎬 Universal Video Streamer</h2>
-      <input
-        type="text"
-        placeholder="Enter Stream URL (.mp4, .m3u8, .mpd)"
-        value={videoURL}
-        onChange={handleURL}
-        style={{ width: "70%", padding: "8px" }}
-      />
-      <p>OR</p>
-      <input
-        type="file"
-        accept=".mp4,.mkv,.m3u8,.mpd,.ts"
-        onChange={handleFile}
-      />
-      {currentSrc && <VideoPlayer src={currentSrc} type={currentType} />}
-      <p style={{ marginTop: 24, color: "gray" }}>
-        Supports Multi-Audio (auto detect) + Max Quality
-      </p>
+    <div style={{ padding: 24, maxWidth: 800, margin: "0 auto" }}>
+      <h1>Toonix TV - Test Player</h1>
+
+      <div style={{ marginBottom: 16 }}>
+        <input
+          style={{ width: "80%", marginRight: 8 }}
+          placeholder="Paste video URL (mp4, m3u8, mpd...)"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+        />
+        <button onClick={handlePlayUrl}>Play</button>
+      </div>
+
+      <div style={{ marginBottom: 16 }}>
+        <input type="file" accept=".mp4,.mkv,.m3u8,.mpd,.ts,.webm" onChange={handleFile} />
+      </div>
+
+      {currentSrc ? (
+        <div>
+          <VideoPlayer src={currentSrc} type={currentType} />
+          <p style={{ marginTop: 12, color: "gray" }}>
+            Supports Multi-Audio (auto detect) + Max Quality
+          </p>
+        </div>
+      ) : (
+        <p>No source selected yet.</p>
+      )}
     </div>
   );
-}
+        }
