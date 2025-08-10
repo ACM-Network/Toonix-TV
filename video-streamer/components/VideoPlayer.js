@@ -7,37 +7,41 @@ const VideoPlayer = ({ src, type }) => {
   const playerRef = useRef(null);
 
   useEffect(() => {
+    // cleanup previous player if any
     if (playerRef.current) {
       playerRef.current.dispose();
     }
 
+    // init player
     playerRef.current = videojs(videoRef.current, {
       controls: true,
       responsive: true,
       fluid: true,
-      sources: [{ src, type }],
-    });
-
-    playerRef.current.on("loadedmetadata", () => {
-      const audioTracks = playerRef.current.audioTracks();
-      if (audioTracks && audioTracks.length > 1) {
-        console.log(`Multiple audio tracks detected (${audioTracks.length})`);
-      }
+      sources: [
+        {
+          src,
+          type: type || undefined,
+        },
+      ],
     });
 
     return () => {
       if (playerRef.current) {
         playerRef.current.dispose();
+        playerRef.current = null;
       }
     };
   }, [src, type]);
 
   return (
-    <div data-vjs-player>
-      <video
-        ref={videoRef}
-        className="video-js vjs-big-play-centered vjs-default-skin"
-      />
+    <div>
+      <div data-vjs-player>
+        <video
+          ref={videoRef}
+          className="video-js vjs-big-play-centered"
+          controls
+        />
+      </div>
     </div>
   );
 };
