@@ -7,7 +7,7 @@ const VideoPlayer = ({ src, type }) => {
   const playerRef = useRef(null);
 
   useEffect(() => {
-    // cleanup previous player if any
+    // cleanup old player
     if (playerRef.current) {
       playerRef.current.dispose();
     }
